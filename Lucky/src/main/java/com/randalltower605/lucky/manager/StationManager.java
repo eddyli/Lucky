@@ -1,13 +1,9 @@
 package com.randalltower605.lucky.manager;
 
 import android.content.Context;
-import android.database.SQLException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -20,12 +16,8 @@ import com.randalltower605.lucky.model.Station;
  * Created by eli on 3/16/14.
  */
 public class StationManager {
-    private static final String fileName = "stops.txt";
-    private static final String delimiter = ",";
-    private static final String PROVIDER_FILE = "file";
     private static StationManager instance;
     private static List<Station> mStations;
-    private static final String TAG = "StationManager";
     private static Queue<Station> mRecentStations;
     private static final int MAX_RECENT_STATIONS_SIZE = 2;
     private static Context context;

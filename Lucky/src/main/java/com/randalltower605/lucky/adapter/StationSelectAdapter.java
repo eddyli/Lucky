@@ -34,7 +34,7 @@ public class StationSelectAdapter extends ArrayAdapter<Station>{
         {
             v.setTypeface(myFont);
         }
-        Station station = (Station) getItem(position);
+        Station station = getItem(position);
         v.setTag(station);
         return v;
     }

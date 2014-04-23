@@ -22,7 +22,6 @@ import com.randalltower605.lucky.util.FontUtil;
 public class SetAlarmFragment extends Fragment{
 
     private final String KEY_SELECTED_STATION_ID = "selectedStationId";
-    private final String KEY_SELECTED_STATION_NAME = "selectedStationName";
     private Station selectedStation;
     private StationManager stationManager;
 

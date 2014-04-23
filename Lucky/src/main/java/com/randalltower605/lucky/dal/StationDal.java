@@ -29,10 +29,8 @@ public class StationDal  extends SQLiteAssetHelper {
     // Database Version
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "caltrain.sqlite";
-    //private static String DB_PATH = "/data/data/com.randalltower605.lucky/databases/";
 
     private Context myContext;
-    //private SQLiteDatabase myDataBase;
 
     public StationDal(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
