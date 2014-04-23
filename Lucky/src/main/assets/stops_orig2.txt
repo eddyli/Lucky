@@ -1,0 +1,281 @@
+﻿{"stops":[
+  {
+    "stop_id":"22nd Street Caltrain",
+    "stop_name":"22nd Street",
+    "stop_desc":"1149 22nd Street,San Francisco",
+    "stop_lat":37.757674,
+    "stop_lon":-122.392636,
+    "zone_id":1,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Atherton Caltrain",
+    "stop_name":"Atherton",
+    "stop_desc":"1 Dinkelspiel Station Lane, Atherton",
+    "stop_lat":37.464349,
+    "stop_lon":-122.198106,
+    "zone_id":3,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Bayshore Caltrain",
+    "stop_name":"Bayshore",
+    "stop_desc":"400 Tunnel Avenue,San Francisco",
+    "stop_lat":37.709544,
+    "stop_lon":-122.401318,
+    "zone_id":1,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Belmont Caltrain",
+    "stop_name":"Belmont",
+    "stop_desc":"995 El Camino Real, Belmont",
+    "stop_lat":37.520504,
+    "stop_lon":-122.276075,
+    "zone_id":2,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Blossom Hill Caltrain",
+    "stop_name":"Blossom Hill",
+    "stop_desc":"5560 Monterey Hwy.,San Jose",
+    "stop_lat":37.252801,
+    "stop_lon":-121.797369,
+    "zone_id":5,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Broadway Caltrain",
+    "stop_name":"Broadway",
+    "stop_desc":"1190 California Drive, Burlingame",
+    "stop_lat":37.587466,
+    "stop_lon":-122.363233,
+    "zone_id":2,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Burlingame Caltrain",
+    "stop_name":"Burlingame",
+    "stop_desc":"290 California Drive, Burlingame",
+    "stop_lat":37.579719,
+    "stop_lon":-122.345266,
+    "zone_id":2,
+    "stop_url":""
+  },
+  {
+    "stop_id":"California Ave Caltrain",
+    "stop_name":"California Ave",
+    "stop_desc":"101 California Avenue,Palo Alto",
+    "stop_lat":37.428835,
+    "stop_lon":-122.142703,
+    "zone_id":3,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Capitol Caltrain",
+    "stop_name":"Capitol",
+    "stop_desc":"3400 Monterey Hwy.,San Jose",
+    "stop_lat":37.284359,
+    "stop_lon":-121.841589,
+    "zone_id":5,
+    "stop_url":""
+  },
+  {
+    "stop_id":"College Park Caltrain",
+    "stop_name":"College Park",
+    "stop_desc":"780 Stockton Avenue,San Jose",
+    "stop_lat":37.34217,
+    "stop_lon":-121.914998,
+    "zone_id":4,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Gilroy Caltrain",
+    "stop_name":"Gilroy",
+    "stop_desc":"7150 Monterey Street, Gilroy",
+    "stop_lat":37.003084,
+    "stop_lon":-121.567091,
+    "zone_id":6,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Hayward Park Caltrain",
+    "stop_name":"Hayward Park",
+    "stop_desc":"401 Concar Drive,San Mateo",
+    "stop_lat":37.552346,
+    "stop_lon":-122.308916,
+    "zone_id":2,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Hillsdale Caltrain",
+    "stop_name":"Hillsdale",
+    "stop_desc":"3333 El Camino Real,San Mateo",
+    "stop_lat":37.537503,
+    "stop_lon":-122.298001,
+    "zone_id":2,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Lawrence Caltrain",
+    "stop_name":"Lawrence",
+    "stop_desc":"137 San Zeno Way, Sunnyvale",
+    "stop_lat":37.371578,
+    "stop_lon":-121.996982,
+    "zone_id":4,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Menlo Park Caltrain",
+    "stop_name":"Menlo Park",
+    "stop_desc":"1120 Merrill Street,Menlo Park",
+    "stop_lat":37.454604,
+    "stop_lon":-122.182518,
+    "zone_id":3,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Millbrae Caltrain",
+    "stop_name":"Millbrae",
+    "stop_desc":"100 California Drive, Millbrae",
+    "stop_lat":37.600006,
+    "stop_lon":-122.386534,
+    "zone_id":2,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Morgan Hill Caltrain",
+    "stop_name":"Morgan Hill",
+    "stop_desc":"17300 Depot Street,Morgan Hill",
+    "stop_lat":37.129081,
+    "stop_lon":-121.650721,
+    "zone_id":6,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Mountain View Caltrain",
+    "stop_name":"Mountain View",
+    "stop_desc":"600 W. Evelyn Avenue, Mountain View",
+    "stop_lat":37.393879,
+    "stop_lon":-122.076327,
+    "zone_id":3,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Palo Alto Caltrain",
+    "stop_name":"Palo Alto",
+    "stop_desc":"95 University Avenue,Palo Alto",
+    "stop_lat":37.44307,
+    "stop_lon":-122.1649,
+    "zone_id":3,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Redwood City Caltrain",
+    "stop_name":"Redwood City",
+    "stop_desc":"1 James Avenue,Redwood City",
+    "stop_lat":37.485412,
+    "stop_lon":-122.231957,
+    "zone_id":2,
+    "stop_url":""
+  },
+  {
+    "stop_id":"San Antonio Caltrain",
+    "stop_name":"San Antonio",
+    "stop_desc":"190 Showers Drive, Mountain View",
+    "stop_lat":37.407157,
+    "stop_lon":-122.107231,
+    "zone_id":3,
+    "stop_url":""
+  },
+  {
+    "stop_id":"San Bruno Caltrain",
+    "stop_name":"San Bruno",
+    "stop_desc":"481 Huntington Avenue,San Bruno",
+    "stop_lat":37.621572,
+    "stop_lon":-122.406408,
+    "zone_id":1,
+    "stop_url":""
+  },
+  {
+    "stop_id":"San Carlos Caltrain",
+    "stop_name":"San Carlos",
+    "stop_desc":"599 El Camino Real,San Carlos",
+    "stop_lat":37.507361,
+    "stop_lon":-122.260365,
+    "zone_id":2,
+    "stop_url":""
+  },
+  {
+    "stop_id":"San Francisco Caltrain",
+    "stop_name":"San Francisco",
+    "stop_desc":"700 4th Street,San Francisco",
+    "stop_lat":37.7764393371,
+    "stop_lon":-122.394322993,
+    "zone_id":1,
+    "stop_url":""
+  },
+  {
+    "stop_id":"San Jose Caltrain",
+    "stop_name":"San Jose",
+    "stop_desc":"65 Cahill Street,San Jose",
+    "stop_lat":37.330196,
+    "stop_lon":-121.901985,
+    "zone_id":4,
+    "stop_url":""
+  },
+  {
+    "stop_id":"San Martin Caltrain",
+    "stop_name":"San Martin",
+    "stop_desc":"13400 Monterey Hwy.,San Martin",
+    "stop_lat":37.085775,
+    "stop_lon":-121.610809,
+    "zone_id":6,
+    "stop_url":""
+  },
+  {
+    "stop_id":"San Mateo Caltrain",
+    "stop_name":"San Mateo",
+    "stop_desc":"385 First Ave.,San Mateo",
+    "stop_lat":37.568209,
+    "stop_lon":-122.323933,
+    "zone_id":2,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Santa Clara Caltrain",
+    "stop_name":"Santa Clara",
+    "stop_desc":"1001 Railroad Avenue,Santa Clara",
+    "stop_lat":37.352915,
+    "stop_lon":-121.936376,
+    "zone_id":4,
+    "stop_url":""
+  },
+  {
+    "stop_id":"So. San Francisco Caltrain",
+    "stop_name":"So. San Francisco",
+    "stop_desc":"590 Dubuque Avenue,South San Francisco",
+    "stop_lat":37.657013,
+    "stop_lon":-122.405516,
+    "zone_id":1,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Sunnyvale Caltrain",
+    "stop_name":"Sunnyvale",
+    "stop_desc":"121 W. Evelyn Avenue, Sunnyvale",
+    "stop_lat":37.377589,
+    "stop_lon":-122.030116,
+    "zone_id":3,
+    "stop_url":""
+  },
+  {
+    "stop_id":"Tamien Caltrain",
+    "stop_name":"Tamien",
+    "stop_desc":"1355 Lick Avenue,San Jose",
+    "stop_lat":37.31164,
+    "stop_lon":-121.88390,
+    "zone_id":4,
+    "stop_url":""
+  }
+]}

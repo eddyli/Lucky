@@ -1,0 +1,53 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+    <style name="PageTitle" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:textColor">#EEEEEE</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="SchedulePageTitle" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:textColor">#000000</item>
+        <item name="android:textSize">22sp</item>
+</style>
+    <style name="pageControl">
+        <item name="android:layout_width">280dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="startAlarmButton" parent="pageControl">
+        <item name="android:background">#CCCCCC</item>
+        <item name="android:textColor">#6E6E6E</item>
+    </style>
+    <style name="stationSelector" parent="pageControl">
+        <item name="android:background">#000000</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+    <style name="ScheduleStationSelector" parent="pageControl">
+        <item name="android:background">#FFFFFF</item>
+        <item name="android:textColor">#999999</item>
+    </style>
+    <style name="stationSelectorItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:textColor">#cccccc</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="ScheduleTable">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:textColor">#cccccc</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+</resources>
