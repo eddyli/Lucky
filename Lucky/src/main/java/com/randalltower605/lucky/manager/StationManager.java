@@ -16,79 +16,76 @@ import com.randalltower605.lucky.model.Station;
  * Created by eli on 3/16/14.
  */
 public class StationManager {
-    private static StationManager instance;
-    private static List<Station> mStations;
-    private static Queue<Station> mRecentStations;
-    private static final int MAX_RECENT_STATIONS_SIZE = 2;
-    private static Context context;
+  private static StationManager instance;
+  private static List<Station> mStations;
+  private static Queue<Station> mRecentStations;
+  private static final int MAX_RECENT_STATIONS_SIZE = 2;
+  private static Context context;
 
-    private static StationDal stationDal;
-    public StationManager(Context c) {
-        if(instance != null)
-        {
-            mStations = instance.getStations();
-            return;
-        }
-
-        instance = this;
-        context = c;
-        load();
+  private static StationDal stationDal;
+  public StationManager(Context c) {
+    if(instance != null) {
+      mStations = instance.getStations();
+      return;
     }
 
-    private void load() {
-        stationDal = new StationDal(context);
+    instance = this;
+    context = c;
+    load();
+  }
+
+  private void load() {
+    stationDal = new StationDal(context);
+  }
+
+  public static Station getStationById(String id) {
+
+    Station station = null;
+    for(int i=0; i< mStations.size(); i++)
+    {
+      Station thisStation = mStations.get(i);
+      if(thisStation.getId().equals(id))
+        station = thisStation;
     }
 
-    public static Station getStationById(String id) {
+    return station;
+  }
 
-        Station station = null;
-        for(int i=0; i< mStations.size(); i++)
-        {
-            Station thisStation = mStations.get(i);
-            if(thisStation.getId().equals(id))
-                station = thisStation;
-        }
+  public List<Station> getStations() {
+    return mStations;
+  }
+  public List<Station> getStationsByGeoOrder() {
+    return stationDal.getAllParentStations();
+  }
 
-        return station;
+  public List<Trip> getTrips(Station from, Station to, Calendar today) {
+    return stationDal.getTrips(from.getId(), to.getId(), today);
+  }
+
+  //get this save into file system too.
+  public void pushRecentStation(Station station) {
+    if(mRecentStations == null) {
+      mRecentStations = new LinkedList<Station>();
     }
 
-    public List<Station> getStations() {
-        return mStations;
+    //if it is already in the queue, re-queue it
+    if(mRecentStations.remove(station)) {
+      mRecentStations.add(station);
     }
-    public List<Station> getStationsByGeoOrder() {
-
-        return stationDal.getAllParentStations();
+    else {
+      mRecentStations.add(station);
+      if(mRecentStations.size() > MAX_RECENT_STATIONS_SIZE) {
+        mRecentStations.remove();
+      }
     }
+  }
 
-    public List<Trip> getTrips(Station from, Station to, Calendar today) {
+  public List<Station> getRecentStations() {
+    if(mRecentStations == null)
+      return new ArrayList<Station>();
 
-        return stationDal.getTrips(from.getId(), to.getId(), today);
-    }
-
-    //get this save into file system too.
-    public void pushRecentStation(Station station) {
-        if(mRecentStations == null) {
-            mRecentStations = new LinkedList<Station>();
-        }
-
-        //if it is already in the queue, re-queue it
-        if(mRecentStations.remove(station)) {
-            mRecentStations.add(station);
-        }
-        else {
-            mRecentStations.add(station);
-            if(mRecentStations.size() > MAX_RECENT_STATIONS_SIZE) {
-                mRecentStations.remove();
-            }
-        }
-    }
-
-    public List<Station> getRecentStations() {
-        if(mRecentStations == null)
-            return new ArrayList<Station>();
-
-        List<Station> recentStations = new ArrayList<Station>(mRecentStations);
-        Collections.reverse(recentStations);
-        return recentStations;
-    }
+    List<Station> recentStations = new ArrayList<Station>(mRecentStations);
+    Collections.reverse(recentStations);
+    return recentStations;
+  }
 }
