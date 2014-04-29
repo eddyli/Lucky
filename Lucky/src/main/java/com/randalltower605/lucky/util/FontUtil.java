@@ -15,8 +15,4 @@ public class FontUtil {
   public static Typeface getTypeFace(AssetManager assetManager, String typeFaceName) {
     return Typeface.createFromAsset(assetManager, typeFaceName);
   }
-  public static void func2() {
-
-  }
-
 }
