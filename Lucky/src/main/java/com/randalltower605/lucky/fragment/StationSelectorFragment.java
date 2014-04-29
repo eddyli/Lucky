@@ -60,6 +60,7 @@ public class StationSelectorFragment extends DialogFragment {
     }
 
     private void populateStationListView(View v, List<Station> stations) {
+      /*
         ListView listView = (ListView)v.findViewById(R.id.stationSelectorListView);
         listView.setAdapter(new StationSelectAdapter(getActivity(),
                 R.layout.item_station_select,
@@ -70,15 +71,16 @@ public class StationSelectorFragment extends DialogFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Station station = (Station) view.getTag();
+          Station station = (Station) view.getTag();
 
-                //callback to the opener then self dismiss
-                if(stationSelectorDialogListener != null) {
-                    stationSelectorDialogListener.onStationSelectedDialog(station);
-                }
-                dismiss();
+          //callback to the opener then self dismiss
+          if(stationSelectorDialogListener != null) {
+              stationSelectorDialogListener.onStationSelectedDialog(station);
+          }
+          dismiss();
             }
         });
+        listView.setDivider(null);
 
         //optimize this!
         if(m_defaultStation != null) {
@@ -87,10 +89,11 @@ public class StationSelectorFragment extends DialogFragment {
                     listView.setSelection(i);
                 }
             }
-        }
+        }*/
     }
 
     private void populateRecentStationListView(View v, List<Station> recentStations) {
+      /*
         ListView listView = (ListView)v.findViewById(R.id.recentStationSelectorListView);
         listView.setAdapter(new StationSelectAdapter(getActivity(),
                 R.layout.item_station_select,
@@ -110,6 +113,6 @@ public class StationSelectorFragment extends DialogFragment {
                 }
                 dismiss();
             }
-        });
+        });*/
     }
 }
