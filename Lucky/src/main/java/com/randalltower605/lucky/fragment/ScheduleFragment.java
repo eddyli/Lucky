@@ -37,8 +37,7 @@ public class ScheduleFragment extends Fragment {
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.fragment_schedule, container, false);
     mFromSelectButton = (Button) rootView.findViewById(R.id.fromSelectorButton);
     mToSelectButton = (Button) rootView.findViewById(R.id.toSelectorButton);
@@ -53,18 +52,18 @@ public class ScheduleFragment extends Fragment {
         stationSelectorFragment.setStationSelectorDialogListener(new StationSelectorFragment.StationSelectorDialogListener() {
           public void onStationSelectedDialog(Station station) {
 
-            if(station != null) {
-              stationManager.pushRecentStation(station);
+          if(station != null) {
+            stationManager.pushRecentStation(station);
+          }
+          mFromStation = station;
+          if(mFromSelectButton != null) {
+            if(mFromStation == null) {
+              mFromSelectButton.setText(defaultText);
+            } else {
+              mFromSelectButton.setText(mFromStation.getName());
             }
-            mFromStation = station;
-            if(mFromSelectButton != null) {
-              if(mFromStation == null) {
-                mFromSelectButton.setText(defaultText);
-              } else {
-                mFromSelectButton.setText(mFromStation.getName());
-              }
-            }
-            refreshSchedules();
+          }
+          refreshSchedules();
           }
         });
         stationSelectorFragment.show(getFragmentManager(), "SSF", mFromStation);
