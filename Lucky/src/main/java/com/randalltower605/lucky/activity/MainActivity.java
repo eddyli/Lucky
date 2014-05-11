@@ -11,7 +11,7 @@ import com.randalltower605.lucky.R;
 import com.randalltower605.lucky.fragment.ScheduleFragment;
 import com.randalltower605.lucky.fragment.SetAlarmFragment;
 
-public class SetAlarmActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity {
   ViewPager mViewPager;
 
   @Override
