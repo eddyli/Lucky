@@ -105,7 +105,7 @@ public class SetAlarmFragment extends Fragment{
       public void onClick(View v) {
         Intent intent = new Intent(getActivity(), DashboardActivity.class);
         Bundle b = new Bundle();
-        b.putString("to", selectedStation.getId()); //Your id
+        b.putString(DashboardActivity.TO_STATION_ID, selectedStation.getId()); //Your id
         intent.putExtras(b); //Put your id to your next Intent
         startActivity(intent);
       }

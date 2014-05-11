@@ -9,14 +9,51 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
 import com.randalltower605.lucky.R;
 import com.randalltower605.lucky.util.GeofenceUtils;
 
 /**
  * Created by cheukmanli on 5/11/14.
  */
-public class GooglePlayServiceFragmentActivity extends FragmentActivity {
+public class GooglePlayServiceFragmentActivity extends FragmentActivity implements
+  GooglePlayServicesClient.ConnectionCallbacks,
+  GooglePlayServicesClient.OnConnectionFailedListener {
+
+  private final String TAG = "GooglePlayServiceFragmentActivity";
+  LocationClient mLocationClient;
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+        /*
+         * Create a new location client, using the enclosing class to
+         * handle callbacks.
+         */
+    super.onCreate(savedInstanceState);
+    mLocationClient = new LocationClient(this, this, this);
+  }
+
+  /*
+     * Called when the Activity becomes visible.
+     */
+  @Override
+  protected void onStart() {
+    super.onStart();
+    // Connect the client.
+    mLocationClient.connect();
+  }
+
+  /*
+   * Called when the Activity is no longer visible.
+   */
+  @Override
+  protected void onStop() {
+    // Disconnecting the client invalidates it.
+    mLocationClient.disconnect();
+    super.onStop();
+  }
+
 
   /**
    * Verify that Google Play services is available before making a request.
@@ -52,10 +89,28 @@ public class GooglePlayServiceFragmentActivity extends FragmentActivity {
     }
   }
 
-  /**
-   * Define a DialogFragment to display the error dialog generated in
-   * showErrorDialog.
-   */
+  @Override
+  public void onConnected(Bundle bundle) {
+    //super(bundle);
+    Log.d(TAG, "onConnected");
+  }
+
+  @Override
+  public void onDisconnected() {
+    Log.d(TAG, "onDisconnected");
+
+  }
+
+  @Override
+  public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    Log.d(TAG, "onConnectionFailed");
+  }
+
+    /**
+     * Define a DialogFragment to display the error dialog generated in
+     * showErrorDialog.
+     */
   public static class ErrorDialogFragment extends DialogFragment {
 
     // Global field to contain the error dialog
@@ -86,4 +141,5 @@ public class GooglePlayServiceFragmentActivity extends FragmentActivity {
       return mDialog;
     }
   }
+
 }
