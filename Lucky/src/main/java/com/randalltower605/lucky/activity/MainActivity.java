@@ -18,7 +18,7 @@ public class MainActivity extends FragmentActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.activity_set_alarm);
+    setContentView(R.layout.activity_main);
     MainPagerAdapter pagerAdapter = new MainPagerAdapter(
                     getSupportFragmentManager());
 

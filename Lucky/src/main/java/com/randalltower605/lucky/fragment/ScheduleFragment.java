@@ -33,7 +33,7 @@ public class ScheduleFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    stationManager = new StationManager(getActivity());
+    stationManager = StationManager.getInstance(getActivity());
   }
 
   @Override

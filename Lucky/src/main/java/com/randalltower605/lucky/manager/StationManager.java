@@ -16,25 +16,25 @@ import com.randalltower605.lucky.model.Station;
  * Created by eli on 3/16/14.
  */
 public class StationManager {
-  private static StationManager instance;
+  private static StationManager m_instance;
   private static List<Station> mStations;
   private static Queue<Station> mRecentStations;
   private static final int MAX_RECENT_STATIONS_SIZE = 2;
   private static Context context;
 
-  private static StationDal stationDal;
-  public StationManager(Context c) {
-    if(instance != null) {
-      mStations = instance.getStations();
-      return;
-    }
 
-    instance = this;
-    context = c;
-    load();
+  private static StationDal stationDal;
+
+  public static StationManager getInstance(Context context) {
+    if(m_instance == null) {
+      m_instance = new StationManager(context.getApplicationContext());
+    }
+    return m_instance;
   }
 
-  private void load() {
+  private StationManager(Context c) {
+    mStations = getStations();
+    context = c;
     stationDal = new StationDal(context);
   }
 
@@ -54,6 +54,7 @@ public class StationManager {
   public List<Station> getStations() {
     return mStations;
   }
+
   public List<Station> getStationsByGeoOrder() {
     return stationDal.getAllParentStations();
   }

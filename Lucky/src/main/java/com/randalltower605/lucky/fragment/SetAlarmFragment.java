@@ -31,7 +31,7 @@ public class SetAlarmFragment extends Fragment{
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    stationManager = new StationManager(getActivity());
+    stationManager = StationManager.getInstance(getActivity());
     if(savedInstanceState != null) {
       String stationid = savedInstanceState.getString(KEY_SELECTED_STATION_ID);
       selectedStation = stationManager.getStationById(stationid);
