@@ -13,4 +13,6 @@
     <string name="schedule_title">Caltrain time</string>
     <string name="selector_from_default">From</string>
     <string name="selector_to_default">Destination</string>
+
+  <string name="play_services_available">Google play services available</string>
 </resources>

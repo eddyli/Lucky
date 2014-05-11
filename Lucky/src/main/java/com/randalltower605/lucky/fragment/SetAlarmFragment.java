@@ -1,5 +1,6 @@
 package com.randalltower605.lucky.fragment;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.randalltower605.lucky.R;
+import com.randalltower605.lucky.activity.DashboardActivity;
 import com.randalltower605.lucky.manager.StationManager;
 import com.randalltower605.lucky.model.Station;
 
@@ -97,6 +99,17 @@ public class SetAlarmFragment extends Fragment{
     });
     updateUI(rootView);
 
+    Button startAlaramButton = (Button)rootView.findViewById(R.id.startAlarmButton);
+    startAlarmButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(getActivity(), DashboardActivity.class);
+        Bundle b = new Bundle();
+        b.putString("to", selectedStation.getId()); //Your id
+        intent.putExtras(b); //Put your id to your next Intent
+        startActivity(intent);
+      }
+    });
     return rootView;
   }
 

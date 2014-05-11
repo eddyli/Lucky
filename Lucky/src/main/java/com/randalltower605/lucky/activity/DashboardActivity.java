@@ -8,10 +8,13 @@ import com.randalltower605.lucky.R;
 /**
  * Created by eli on 4/23/14.
  */
-public class DashboardActivity extends FragmentActivity {
+public class DashboardActivity extends GooglePlayServiceFragmentActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_dashboard);
+    if(servicesConnected()) {
+
+    }
   }
 }
