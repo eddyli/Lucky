@@ -3,4 +3,7 @@
 /.idea/workspace.xml
 .DS_Store
 /Lucky/build
-/.idea/
+/.idea/*
+/Lucky/Lucky-Lucky.iml
+Lucky.iml
+
