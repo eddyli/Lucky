@@ -1,9 +1,9 @@
 .gradle
+/Lucky/Lucky-Lucky.iml
+Lucky.iml
 /local.properties
 /.idea/workspace.xml
 .DS_Store
 /Lucky/build
 /.idea/*
-/Lucky/Lucky-Lucky.iml
-Lucky.iml
 
