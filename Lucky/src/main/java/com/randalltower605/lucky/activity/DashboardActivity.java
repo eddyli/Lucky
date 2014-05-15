@@ -9,7 +9,7 @@ import com.randalltower605.lucky.R;
 /**
  * Created by eli on 4/23/14.
  */
-public class DashboardActivity extends GooglePlayServiceFragmentActivity {
+public class DashboardActivity extends LocationFragmentActivity {
   public final static String FROM_STATION_ID = "fromStationId";
   public final static String TO_STATION_ID = "toStationId";
 

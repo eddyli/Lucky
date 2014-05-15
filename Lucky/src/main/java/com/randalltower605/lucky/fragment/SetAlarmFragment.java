@@ -1,5 +1,6 @@
 package com.randalltower605.lucky.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.graphics.Paint;
@@ -26,6 +27,7 @@ public class SetAlarmFragment extends Fragment{
   private final String KEY_SELECTED_STATION_ID = "selectedStationId";
   private Station selectedStation;
   private StationManager stationManager;
+  private OnStartAlarmClickListener mCallback;
 
   public SetAlarmFragment() {
   }
@@ -37,6 +39,15 @@ public class SetAlarmFragment extends Fragment{
     if(savedInstanceState != null) {
       String stationid = savedInstanceState.getString(KEY_SELECTED_STATION_ID);
       selectedStation = stationManager.getStationById(stationid);
+    }
+  }
+  @Override
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    try {
+      mCallback = (OnStartAlarmClickListener) activity;
+    } catch (ClassCastException e) {
+      throw new ClassCastException(activity.toString() + " must implement OnStartAlarmClickListener");
     }
   }
 
@@ -103,11 +114,7 @@ public class SetAlarmFragment extends Fragment{
     startAlarmButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Intent intent = new Intent(getActivity(), DashboardActivity.class);
-        Bundle b = new Bundle();
-        b.putString(DashboardActivity.TO_STATION_ID, selectedStation.getId()); //Your id
-        intent.putExtras(b); //Put your id to your next Intent
-        startActivity(intent);
+        mCallback.onStartAlarmClick(selectedStation);
       }
     });
     return rootView;
@@ -121,5 +128,9 @@ public class SetAlarmFragment extends Fragment{
     if(selectedStation != null) {
       savedInstanceState.putString(KEY_SELECTED_STATION_ID, selectedStation.getId());
     }
+  }
+
+  public interface OnStartAlarmClickListener {
+    public void onStartAlarmClick(Station station);
   }
 }

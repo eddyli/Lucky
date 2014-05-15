@@ -3,9 +3,11 @@ package com.randalltower605.lucky.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.DebugUtils;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -13,17 +15,20 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.randalltower605.lucky.R;
+import com.randalltower605.lucky.fragment.SetAlarmFragment;
+import com.randalltower605.lucky.util.DebugUtil;
 import com.randalltower605.lucky.util.GeofenceUtils;
 
 /**
  * Created by cheukmanli on 5/11/14.
  */
-public class GooglePlayServiceFragmentActivity extends FragmentActivity implements
+public class LocationFragmentActivity extends FragmentActivity implements
   GooglePlayServicesClient.ConnectionCallbacks,
   GooglePlayServicesClient.OnConnectionFailedListener {
 
   private final String TAG = "GooglePlayServiceFragmentActivity";
-  LocationClient mLocationClient;
+  protected LocationClient mLocationClient;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
         /*
@@ -31,7 +36,9 @@ public class GooglePlayServiceFragmentActivity extends FragmentActivity implemen
          * handle callbacks.
          */
     super.onCreate(savedInstanceState);
-    mLocationClient = new LocationClient(this, this, this);
+    if(mLocationClient == null) {
+      mLocationClient = new LocationClient(this, this, this);
+    }
   }
 
   /*
@@ -41,7 +48,9 @@ public class GooglePlayServiceFragmentActivity extends FragmentActivity implemen
   protected void onStart() {
     super.onStart();
     // Connect the client.
-    mLocationClient.connect();
+    if(servicesConnected()) {
+      mLocationClient.connect();
+    }
   }
 
   /*
@@ -71,6 +80,7 @@ public class GooglePlayServiceFragmentActivity extends FragmentActivity implemen
 
       // In debug mode, log the status
       Log.d(GeofenceUtils.APPTAG, getString(R.string.play_services_available));
+      DebugUtil.showToast(this, "google play services available");
 
       // Continue
       return true;
@@ -89,22 +99,29 @@ public class GooglePlayServiceFragmentActivity extends FragmentActivity implemen
     }
   }
 
+  protected Location getCurrentLocation() {
+    Location currentLocation = null;
+    if(mLocationClient.isConnected()) {
+      currentLocation = mLocationClient.getLastLocation();
+    }
+    return currentLocation;
+  }
+
   @Override
   public void onConnected(Bundle bundle) {
     //super(bundle);
-    Log.d(TAG, "onConnected");
+    DebugUtil.showToast(this, "locationClient on connect");
   }
 
   @Override
   public void onDisconnected() {
-    Log.d(TAG, "onDisconnected");
-
+    DebugUtil.showToast(this, "locationClient onDisconnect");
   }
 
   @Override
   public void onConnectionFailed(ConnectionResult connectionResult) {
 
-    Log.d(TAG, "onConnectionFailed");
+    DebugUtil.showToast(this, "locationClient on connect failed");
   }
 
     /**
