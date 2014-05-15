@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import com.randalltower605.lucky.R;
 import com.randalltower605.lucky.fragment.ScheduleFragment;
 import com.randalltower605.lucky.fragment.SetAlarmFragment;
+import com.randalltower605.lucky.manager.StationManager;
 import com.randalltower605.lucky.model.Station;
 import com.randalltower605.lucky.util.DebugUtil;
 
@@ -19,6 +20,7 @@ public class MainActivity extends LocationFragmentActivity implements
   SetAlarmFragment.OnStartAlarmClickListener {
   ViewPager mViewPager;
   Location mCurrentLocation;
+  StationManager mStationManager;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,7 @@ public class MainActivity extends LocationFragmentActivity implements
 
     mViewPager = (ViewPager)findViewById(R.id.mainViewPager);
     mViewPager.setAdapter(pagerAdapter);
+    mStationManager = StationManager.getInstance(this);
   }
 
   // Since this is an object collection, use a FragmentStatePagerAdapter,
@@ -62,10 +65,12 @@ public class MainActivity extends LocationFragmentActivity implements
   }
 
   public void onStartAlarmClick(Station selectedStation) {
-
+    Station fromStation;
     mCurrentLocation = getCurrentLocation();
     if(mCurrentLocation != null) {
       DebugUtil.showToast(this, "current location = " + mCurrentLocation.toString());
+      fromStation = mStationManager.getNearestStation(mCurrentLocation);
+      DebugUtil.showToast(this, "nearest station = " + fromStation.getName());
     }
 
     if(selectedStation != null) {

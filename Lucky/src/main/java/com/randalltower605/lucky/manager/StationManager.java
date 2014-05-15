@@ -1,6 +1,8 @@
 package com.randalltower605.lucky.manager;
 
 import android.content.Context;
+import android.location.Location;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -33,12 +35,12 @@ public class StationManager {
   }
 
   private StationManager(Context c) {
-    mStations = getStations();
     context = c;
     stationDal = new StationDal(context);
+    mStations = stationDal.getAllParentStations();
   }
 
-  public static Station getStationById(String id) {
+  public Station getStationById(String id) {
 
     Station station = null;
     for(int i=0; i< mStations.size(); i++)
@@ -51,12 +53,23 @@ public class StationManager {
     return station;
   }
 
-  public List<Station> getStations() {
-    return mStations;
+  public Station getNearestStation(Location center) {
+
+    Station nearestStation = null;
+    float minDistance = Float.MAX_VALUE;
+    for(int i=0; i< mStations.size(); i++) {
+      Station thisStation = mStations.get(i);
+      float distance = center.distanceTo(thisStation.getLocation());
+      if(distance < minDistance) {
+        minDistance = distance;
+        nearestStation = thisStation;
+      }
+    }
+    return nearestStation;
   }
 
-  public List<Station> getStationsByGeoOrder() {
-    return stationDal.getAllParentStations();
+  public List<Station> getStations() {
+    return mStations;
   }
 
   public List<Trip> getTrips(Station from, Station to, Calendar today) {

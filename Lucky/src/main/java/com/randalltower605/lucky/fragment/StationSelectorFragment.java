@@ -48,7 +48,7 @@ public class StationSelectorFragment extends DialogFragment {
                              Bundle savedInstanceState)
     {
         StationManager stationManager = StationManager.getInstance(getActivity());
-        List<Station> stations = stationManager.getStationsByGeoOrder();
+        List<Station> stations = stationManager.getStations();
         List<Station> recentStations = stationManager.getRecentStations();
         View v = inflater.inflate(R.layout.station_select_dialog_view, container, false);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
