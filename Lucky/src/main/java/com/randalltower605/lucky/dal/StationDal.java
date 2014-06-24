@@ -64,6 +64,15 @@ public class StationDal  extends SQLiteAssetHelper {
   }
 
   public List<Trip> getTrips(String fromId, String toId, Calendar today) {
+    return getTrips(fromId, toId, today, false);
+  }
+
+  public Trip getTrip(String fromId, String toId, Calendar today) {
+    List<Trip> trips = getTrips(fromId, toId, today, true);
+    return trips != null ? trips.get(0) : null;
+  }
+
+  private List<Trip> getTrips(String fromId, String toId, Calendar today, boolean next) {
 
     //Calendar c = Calendar. today;
     List<Trip> trips = new ArrayList<Trip>();
@@ -94,6 +103,10 @@ public class StationDal  extends SQLiteAssetHelper {
     SimpleDateFormat simpleDF = new SimpleDateFormat("yyyy-MM-dd");
     String strdate = simpleDF.format(today.getTime());
 
+    simpleDF = new SimpleDateFormat("HH:mm:ss");
+    String strtime = simpleDF.format(today.getTime());
+
+/*
     String selectQuery = " SELECT c.trip_id, a.stop_name, a1.stop_name, b.departure_time, b1.arrival_time " +
             "FROM stops a, stop_times b, stops a1, stop_times b1, trips c, calendar d " +
             "where a.parent_station='" + fromId + "' and a.stop_id = b.stop_id " +
@@ -101,10 +114,22 @@ public class StationDal  extends SQLiteAssetHelper {
             "and b.stop_sequence < b1.stop_sequence " +
             "and b.trip_id = c.trip_id and c.service_id = d.service_id and d." + dayFlag + " = 1 " +
             "and d.start_date <= '" + strdate + "' and d.end_date >= '" + strdate + "' " +
-            "order by b.arrival_time";
+            "order by b.arrival_time";*/
+
+    String selectQuery = " SELECT c.trip_id, a.stop_name, a1.stop_name, b.departure_time, b1.arrival_time " +
+      "FROM stops a, stop_times b, stops a1, stop_times b1, trips c, calendar d " +
+      "where a.parent_station='%s' and a.stop_id = b.stop_id " +
+      "and b.trip_id = b1.trip_id and a1.parent_station='%s' and a1.stop_id = b1.stop_id " +
+      "and b.stop_sequence < b1.stop_sequence " +
+      "and b.trip_id = c.trip_id and c.service_id = d.service_id and d.%s = 1 " +
+      "and d.start_date <= '%s' and d.end_date >= '%s' %s" +
+      "order by b.arrival_time";
+
+    String timePart = "and b.departure_time > '" + strtime + "' ";
+    String fulFilledSelectQuery = String.format(selectQuery, fromId, toId, dayFlag, strdate, strdate, next ? timePart : "");
 
     SQLiteDatabase db = getReadableDatabase();
-    Cursor cursor = db.rawQuery(selectQuery, null);
+    Cursor cursor = db.rawQuery(fulFilledSelectQuery, null);
 
     // looping through all rows and adding to list
     if (cursor.moveToFirst()) {
@@ -141,5 +166,43 @@ FROM stops a, stop_times b, stops a1, stop_times b1, trips c, calendar d
 order by b.arrival_time
     * */
     return trips;
+  }
+
+  public List<Station> getTripStops(String tripId, Calendar departureTime, Calendar arrivalTime) {
+    List<Station> stations = new ArrayList<Station>();
+    String selectQuery = "select b.stop_id, b.stop_name, b.stop_lat, b.stop_lon, b.zone_id " +
+      "from stop_times a, stops b where a.stop_id = b.stop_id and a.trip_id='%s' and a.departure_time >= '%s' and a.arrival_time <= '%s'";
+
+
+    SimpleDateFormat simpleDF = new SimpleDateFormat("HH:mm:ss");
+    String arrivalTimeStr = simpleDF.format(arrivalTime.getTime());
+    String departureTimeStr = simpleDF.format(departureTime.getTime());
+    String fulfilledSelectQuery = String.format(selectQuery, tripId, departureTimeStr, arrivalTimeStr);
+
+    SQLiteDatabase db = getReadableDatabase();
+    Cursor cursor = db.rawQuery(fulfilledSelectQuery, null);
+
+    // looping through all rows and adding to list
+    // looping through all rows and adding to list
+    if (cursor.moveToFirst()) {
+      do {
+        Station station = new Station();
+        station.setId(cursor.getString(0));
+        station.setName(cursor.getString(1));
+        Location l = new Location("test");
+        l.setLatitude(Double.parseDouble(cursor.getString(2)));
+        l.setLongitude(Double.parseDouble(cursor.getString(3)));
+        station.setLocation(l);
+        if(cursor.getString(4) != null) {
+          station.setZone(Integer.parseInt(cursor.getString(4)));
+        }
+        stations.add(station);
+      } while (cursor.moveToNext());
+    }
+
+    /*
+    select * from stop_times where trip_id='6506115-CT-12OCT-Caltrain-Sunday-02' and stop_sequence < (select stop_sequence from stop_times where trip_id='6506115-CT-12OCT-Caltrain-Sunday-02' and stop_id=70232) and stop_sequence >= (select stop_sequence from stop_times where trip_id='6506115-CT-12OCT-Caltrain-Sunday-02' and stop_id=70142)
+     */
+    return stations;
   }
 }

@@ -2,6 +2,8 @@ package com.randalltower605.lucky.model;
 
 import android.location.Location;
 
+import com.google.android.gms.location.Geofence;
+
 /**
  * Created by eli on 3/16/14.
  */
@@ -45,5 +47,22 @@ public class Station {
 
   public String toString() {
     return this.mName;
+  }
+
+  public double getLatitude() {
+    return getLocation().getLatitude();
+  }
+  public double getLongitude() {
+    return getLocation().getLongitude();
+  }
+
+  public Geofence toGeofence(int transitionType, int radius, long durationMillis) {
+    return new Geofence.Builder()
+      .setRequestId(getId())
+      .setTransitionTypes(transitionType)
+      .setCircularRegion(
+        getLatitude(), getLongitude(), radius)
+      .setExpirationDuration(durationMillis)
+      .build();
   }
 }

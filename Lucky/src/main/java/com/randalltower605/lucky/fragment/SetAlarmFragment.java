@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,13 +29,16 @@ public class SetAlarmFragment extends Fragment{
   private Station selectedStation;
   private StationManager stationManager;
   private OnStartAlarmClickListener mCallback;
+  private static final String TAG = SetAlarmFragment.class.getSimpleName();
 
   public SetAlarmFragment() {
+    Log.d(TAG, "constructor: BEB");
   }
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    Log.d(TAG, "onCreate: BEB");
     stationManager = StationManager.getInstance(getActivity());
     if(savedInstanceState != null) {
       String stationid = savedInstanceState.getString(KEY_SELECTED_STATION_ID);
@@ -44,11 +48,61 @@ public class SetAlarmFragment extends Fragment{
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
+    Log.d(TAG, "onAttach: BEB");
     try {
       mCallback = (OnStartAlarmClickListener) activity;
     } catch (ClassCastException e) {
       throw new ClassCastException(activity.toString() + " must implement OnStartAlarmClickListener");
     }
+  }
+
+  @Override
+  public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+    Log.d(TAG, "onActivityCreated: BEB");
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+
+    Log.d(TAG, "onStart: BEB");
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    Log.d(TAG, "onResume: BEB");
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+    Log.d(TAG, "onPause: BEB");
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    Log.d(TAG, "onStop: BEB");
+  }
+
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    Log.d(TAG, "onDestroyView: BEB");
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    Log.d(TAG, "onDestroy: BEB");
+  }
+
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    Log.d(TAG, "onDetach: BEB");
   }
 
   private void updateUI(View v) {
@@ -69,6 +123,7 @@ public class SetAlarmFragment extends Fragment{
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
+    Log.d(TAG, "onCreateView: BEB");
     View rootView = inflater.inflate(R.layout.fragment_set_alarm, container, false);
 
     //set page title style

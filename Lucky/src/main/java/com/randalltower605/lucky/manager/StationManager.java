@@ -2,6 +2,7 @@ package com.randalltower605.lucky.manager;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,12 +24,15 @@ public class StationManager {
   private static Queue<Station> mRecentStations;
   private static final int MAX_RECENT_STATIONS_SIZE = 2;
   private static Context context;
+  private static final String TAG = StationManager.class.getSimpleName();
 
 
   private static StationDal stationDal;
 
   public static StationManager getInstance(Context context) {
+    Log.d(TAG, "StationManager get instance :BEB");
     if(m_instance == null) {
+      Log.d(TAG, "StationManager create instance :BEB");
       m_instance = new StationManager(context.getApplicationContext());
     }
     return m_instance;
@@ -74,6 +78,11 @@ public class StationManager {
 
   public List<Trip> getTrips(Station from, Station to, Calendar today) {
     return stationDal.getTrips(from.getId(), to.getId(), today);
+  }
+
+  public List<Station> getTripStops(Station from, Station to, Calendar today) {
+    Trip trip = stationDal.getTrip(from.getId(), to.getId(), today);
+    return stationDal.getTripStops(trip.getId(), trip.getDeparture(), trip.getArrival());
   }
 
   //get this save into file system too.

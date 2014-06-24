@@ -1,38 +1,42 @@
 package com.randalltower605.lucky.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.location.Location;
-import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 
+import com.google.android.gms.location.Geofence;
 import com.randalltower605.lucky.R;
 import com.randalltower605.lucky.fragment.ScheduleFragment;
 import com.randalltower605.lucky.fragment.SetAlarmFragment;
 import com.randalltower605.lucky.manager.StationManager;
 import com.randalltower605.lucky.model.Station;
-import com.randalltower605.lucky.service.StationAlarmService;
-import com.randalltower605.lucky.util.AppConstants;
+import com.randalltower605.lucky.model.Trip;
 import com.randalltower605.lucky.util.DebugUtil;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends LocationFragmentActivity implements
   SetAlarmFragment.OnStartAlarmClickListener {
   ViewPager mViewPager;
   Location mCurrentLocation;
   StationManager mStationManager;
-  //StationAlarmResponseReceiver mDownloadStateReceiver;
+  private static final int GEOFENCE_RADIUS = 100;
+  private static final long GEOFENCE_EXPIRY = 2 * 60 * 60 * 1000;
+
+  private static final String TAG = MainActivity.class.getSimpleName();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    Log.d(TAG, "onCreate: BEB");
     setContentView(R.layout.activity_main);
     MainPagerAdapter pagerAdapter = new MainPagerAdapter(
                     getSupportFragmentManager());
@@ -40,17 +44,40 @@ public class MainActivity extends LocationFragmentActivity implements
     mViewPager = (ViewPager)findViewById(R.id.mainViewPager);
     mViewPager.setAdapter(pagerAdapter);
     mStationManager = StationManager.getInstance(this);
+  }
 
+  @Override
+  public void onStart() {
+    super.onStart();
 
-    //IntentFilter mStatusIntentFilter = new IntentFilter(AppConstants.BROADCAST_ACTION);
-    // Adds a data filter for the HTTP scheme
-    //mStatusIntentFilter.addDataScheme("http");
+    Log.d(TAG, "onStart: BEB");
+  }
 
-    // Instantiates a new DownloadStateReceiver
-    //mDownloadStateReceiver = new StationAlarmResponseReceiver();
-    // Registers the DownloadStateReceiver and its intent filters
-    //LocalBroadcastManager.getInstance(this).registerReceiver(mDownloadStateReceiver,mStatusIntentFilter);
+  @Override
+  public void onResume() {
+    super.onResume();
 
+    Log.d(TAG, "onResume: BEB");
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+
+    Log.d(TAG, "onPause: BEB");
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+
+    Log.d(TAG, "onStop: BEB");
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    Log.d(TAG, "onDestroy: BEB");
   }
 
   // Since this is an object collection, use a FragmentStatePagerAdapter,
@@ -93,28 +120,23 @@ public class MainActivity extends LocationFragmentActivity implements
 
     if(selectedStation != null && fromStation != null) {
 
+      List<Trip> trips = mStationManager.getTrips(fromStation, selectedStation, Calendar.getInstance());
+      List<Station> tripStops = mStationManager.getTripStops(fromStation, selectedStation, Calendar.getInstance());
 
-      Intent mServiceIntent = new Intent(this, StationAlarmService.class);
-      mServiceIntent.setData(Uri.parse(selectedStation.getId()));
-
-      startService(mServiceIntent);
-
+      //add geofences
+      List<Geofence> geofences = new ArrayList<Geofence>();
+      for(int i=0; i< tripStops.size(); i++) {
+        geofences.add(tripStops.get(i).toGeofence(Geofence.GEOFENCE_TRANSITION_ENTER, GEOFENCE_RADIUS, GEOFENCE_EXPIRY));
+      }
+      addGeoFences(geofences);
 
       Intent intent = new Intent(this, DashboardActivity.class);
       Bundle b = new Bundle();
       b.putString(DashboardActivity.TO_STATION_ID, selectedStation.getId()); //Your id
       b.putString(DashboardActivity.FROM_STATION_ID, fromStation.getId()); //Your id
-      intent.putExtras(b); //Put your id to your next Intent
+      intent.putExtras(b);
       startActivity(intent);
     }
   }
 
-  private class StationAlarmResponseReceiver extends BroadcastReceiver {
-    private StationAlarmResponseReceiver() {
-
-    }
-    public void onReceive(Context context, Intent intent) {
-      DebugUtil.showToast(context, "Main receive response");
-    }
-  }
 }
