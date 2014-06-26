@@ -16,6 +16,7 @@ import com.randalltower605.lucky.fragment.SetAlarmFragment;
 import com.randalltower605.lucky.manager.StationManager;
 import com.randalltower605.lucky.manager.TripManager;
 import com.randalltower605.lucky.model.Station;
+import com.randalltower605.lucky.model.Stop;
 import com.randalltower605.lucky.model.Trip;
 import com.randalltower605.lucky.util.DebugUtil;
 
@@ -125,7 +126,7 @@ public class MainActivity extends LocationFragmentActivity implements
 
       List<Trip> trips = mTripManager.getTrips(fromStation, selectedStation, Calendar.getInstance());
       if(trips != null && trips.size() > 0) {
-        List<Station> stops = mTripManager.getStops(trips.get(0));
+        List<Stop> stops = mTripManager.getStops(trips.get(0));
 
         if(stops != null && stops.size() > 0) {
           List<Geofence> geofences = new ArrayList<Geofence>();

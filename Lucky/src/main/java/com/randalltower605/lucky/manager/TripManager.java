@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.randalltower605.lucky.dal.StationDal;
 import com.randalltower605.lucky.model.Station;
+import com.randalltower605.lucky.model.Stop;
 import com.randalltower605.lucky.model.Trip;
 
 import java.util.ArrayList;
@@ -33,8 +34,8 @@ public class TripManager {
     return stationDal.getTrips(from.getId(), to.getId(), date);
   }
 
-  public List<Station> getStops(Trip trip) {
-    List<Station> stops = new ArrayList<Station>();
+  public List<Stop> getStops(Trip trip) {
+    List<Stop> stops = new ArrayList<Stop>();
     if(trip == null) {
       return stops;
     }

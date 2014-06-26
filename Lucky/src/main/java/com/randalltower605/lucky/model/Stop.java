@@ -8,4 +8,20 @@ import java.util.Calendar;
 public class Stop extends Station {
   private Calendar mDeparture;
   private Calendar mArrival;
+
+  public Calendar getDeparture() {
+    return mDeparture;
+  }
+
+  public void setDeparture(Calendar departure) {
+    mDeparture = departure;
+  }
+
+  public Calendar getArrival() {
+    return mArrival;
+  }
+
+  public void setArrival(Calendar arrival) {
+    mArrival = arrival;
+  }
 }

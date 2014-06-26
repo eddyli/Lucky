@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 
+import com.randalltower605.lucky.model.Stop;
 import com.randalltower605.lucky.model.Trip;
 import com.randalltower605.lucky.model.Station;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
@@ -103,14 +104,7 @@ public class StationDal  extends SQLiteAssetHelper {
     return stations;
   }
 
-  public List<Trip> getTrips(String fromId, String toId, Calendar today) {
-    return getTrips(fromId, toId, today, false);
-  }
-
-  /*
-
-   */
-  private List<Trip> getTrips(String fromId, String toId, Calendar calendar, boolean next) {
+  public List<Trip> getTrips(String fromId, String toId, Calendar calendar) {
 
     List<Trip> trips = new ArrayList<Trip>();
 
@@ -134,14 +128,14 @@ public class StationDal  extends SQLiteAssetHelper {
     SQLiteDatabase db = getReadableDatabase();
     Cursor cursor = db.rawQuery(fulFilledSelectQuery, null);
 
-    if (cursor.moveToFirst()) {
-      do {
-        Trip trip = new Trip();
-        trip.setId(cursor.getString(0));
-        trip.setFromStation(cursor.getString(1));
-        trip.setToStation(cursor.getString(2));
+    try {
+      if (cursor.moveToFirst()) {
+        do {
+          Trip trip = new Trip();
+          trip.setId(cursor.getString(0));
+          trip.setFromStation(cursor.getString(1));
+          trip.setToStation(cursor.getString(2));
 
-        try {
           Calendar arrival = Calendar.getInstance();
           arrival.setTime(dbTimeFormat.parse(cursor.getString(4)));
           trip.setArrival(arrival);
@@ -149,25 +143,25 @@ public class StationDal  extends SQLiteAssetHelper {
           Calendar departure = Calendar.getInstance();
           departure.setTime(dbTimeFormat.parse(cursor.getString(3)));
           trip.setDeparture(departure);
-        } catch (ParseException e) {
 
-        }
-
-        trips.add(trip);
-      } while (cursor.moveToNext());
+          trips.add(trip);
+        } while (cursor.moveToNext());
+      }
+    } catch (ParseException e) {
+      return new ArrayList<Trip>();
     }
 
     db.close();
     return trips;
   }
 
-  public List<Station> getStops(Trip trip) {
-    List<Station> stations = new ArrayList<Station>();
+  public List<Stop> getStops(Trip trip) {
+    List<Stop> stops = new ArrayList<Stop>();
     if(trip == null) {
-      return stations;
+      return stops;
     }
 
-    String selectQuery = "select b.stop_id, b.stop_name, b.stop_lat, b.stop_lon, b.zone_id " +
+    String selectQuery = "select b.stop_id, b.stop_name, b.stop_lat, b.stop_lon, b.zone_id, a.departure_time, a.arrival_time " +
       "from stop_times a, stops b where a.stop_id = b.stop_id and a.trip_id='%s' and a.departure_time >= '%s' and a.arrival_time <= '%s'";
 
     String fulfilledSelectQuery = String.format(selectQuery,
@@ -178,23 +172,35 @@ public class StationDal  extends SQLiteAssetHelper {
     SQLiteDatabase db = getReadableDatabase();
     Cursor cursor = db.rawQuery(fulfilledSelectQuery, null);
 
-    if (cursor.moveToFirst()) {
-      do {
-        Station station = new Station();
-        station.setId(cursor.getString(0));
-        station.setName(cursor.getString(1));
-        Location l = new Location(Station.LOCATION_PROVIDER);
-        l.setLatitude(Double.parseDouble(cursor.getString(2)));
-        l.setLongitude(Double.parseDouble(cursor.getString(3)));
-        station.setLocation(l);
-        if(cursor.getString(4) != null) {
-          station.setZone(Integer.parseInt(cursor.getString(4)));
-        }
-        stations.add(station);
-      } while (cursor.moveToNext());
+    try {
+      if (cursor.moveToFirst()) {
+        do {
+          Stop stop = new Stop();
+          stop.setId(cursor.getString(0));
+          stop.setName(cursor.getString(1));
+          Location l = new Location(Station.LOCATION_PROVIDER);
+          l.setLatitude(Double.parseDouble(cursor.getString(2)));
+          l.setLongitude(Double.parseDouble(cursor.getString(3)));
+          stop.setLocation(l);
+          if (cursor.getString(4) != null) {
+            stop.setZone(Integer.parseInt(cursor.getString(4)));
+          }
+          Calendar arrival = Calendar.getInstance();
+          arrival.setTime(dbTimeFormat.parse(cursor.getString(5)));
+          stop.setArrival(arrival);
+
+          Calendar departure = Calendar.getInstance();
+          departure.setTime(dbTimeFormat.parse(cursor.getString(6)));
+          stop.setDeparture(departure);
+
+          stops.add(stop);
+        } while (cursor.moveToNext());
+      }
+    } catch(ParseException e) {
+      return new ArrayList<Stop>();
     }
 
     db.close();
-    return stations;
+    return stops;
   }
 }
