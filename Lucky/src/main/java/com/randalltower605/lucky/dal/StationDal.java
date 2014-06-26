@@ -35,8 +35,10 @@ public class StationDal  extends SQLiteAssetHelper {
     dbDayString.put(6, "friday");
     dbDayString.put(7, "saturday");
   }
-  private static final String dbDateFormat = "yyyy-MM-dd";
-  private static final String dbTimeFormat = "HH:mm:ss";
+  //caltrain db day don't end at 00, overnight train hour could exceed 24. for example 1am = 25, etc.
+  private static final int dayEndsHour = 3;
+  private static final SimpleDateFormat dbTimeFormat = new SimpleDateFormat("HH:mm:ss");
+  private static final SimpleDateFormat dbDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
   public StationDal(Context context) {
     super(context, DB_NAME, null, DB_VERSION);
@@ -48,33 +50,25 @@ public class StationDal  extends SQLiteAssetHelper {
   }
 
   private String getDBTimeString(Calendar calendar) {
-    String timeStr = new SimpleDateFormat(dbTimeFormat).format(calendar.getTime());
-
-    String[] timeStrSplit = timeStr.split(":");
-    String parsedHour = timeStrSplit[0];
-    String newHour = "";
-    newHour = (parsedHour.equals("00")) ? "24" :
-      (parsedHour.equals("01")) ? "25" :
-      (parsedHour.equals("02")) ? "26" :
-      (parsedHour.equals("03")) ? "27" : "";
-
-    if(!newHour.isEmpty()) {
-      timeStr = newHour + ":" + timeStrSplit[1] + ":" + timeStrSplit[2];
+    String timeStr = dbTimeFormat.format(calendar.getTime());
+    int hour = calendar.get(Calendar.HOUR);
+    if(hour >= 0 && hour <= dayEndsHour) {
+        timeStr = Integer.toString(24 + hour) + timeStr.substring(2, timeStr.length());
     }
     return timeStr;
   }
 
   private String getDBDateString(Calendar calendar) {
     int hour = calendar.get(Calendar.HOUR);
-    if(hour >= 0 && hour <= 3) {
+    if(hour >= 0 && hour <= dayEndsHour) {
       calendar.add(Calendar.DATE, -1);
     }
-    return (new SimpleDateFormat(dbDateFormat)).format(calendar.getTime());
+    return (dbDateFormat).format(calendar.getTime());
   }
 
   private String getDBWeekDayString(Calendar calendar) {
     int hour = calendar.get(Calendar.HOUR);
-    if(hour >= 0 && hour <= 3) {
+    if(hour >= 0 && hour <= dayEndsHour) {
       calendar.add(Calendar.DATE, -1);
     }
     return dbDayString.get(calendar.get(Calendar.DAY_OF_WEEK));
@@ -120,16 +114,6 @@ public class StationDal  extends SQLiteAssetHelper {
 
     List<Trip> trips = new ArrayList<Trip>();
 
-/*
-    String selectQuery = " SELECT c.trip_id, a.stop_name, a1.stop_name, b.departure_time, b1.arrival_time " +
-            "FROM stops a, stop_times b, stops a1, stop_times b1, trips c, calendar d " +
-            "where a.parent_station='" + fromId + "' and a.stop_id = b.stop_id " +
-            "and b.trip_id = b1.trip_id and a1.parent_station='" + toId + "' and a1.stop_id = b1.stop_id " +
-            "and b.stop_sequence < b1.stop_sequence " +
-            "and b.trip_id = c.trip_id and c.service_id = d.service_id and d." + dayFlag + " = 1 " +
-            "and d.start_date <= '" + strdate + "' and d.end_date >= '" + strdate + "' " +
-            "order by b.arrival_time";*/
-
     String selectQuery = " SELECT c.trip_id, a.stop_name, a1.stop_name, b.departure_time, b1.arrival_time " +
       "FROM stops a, stop_times b, stops a1, stop_times b1, trips c, calendar d " +
       "where a.parent_station='%s' and a.stop_id = b.stop_id " +
@@ -139,7 +123,13 @@ public class StationDal  extends SQLiteAssetHelper {
       "and d.start_date <= '%s' and d.end_date >= '%s' and b.departure_time > '%s' " +
       "order by b.arrival_time";
 
-    String fulFilledSelectQuery = String.format(selectQuery, fromId, toId, getDBWeekDayString(calendar), getDBDateString(calendar), getDBDateString(calendar), getDBTimeString(calendar));
+    String fulFilledSelectQuery = String.format(selectQuery,
+      fromId,
+      toId,
+      getDBWeekDayString(calendar),
+      getDBDateString(calendar),
+      getDBDateString(calendar),
+      getDBTimeString(calendar));
 
     SQLiteDatabase db = getReadableDatabase();
     Cursor cursor = db.rawQuery(fulFilledSelectQuery, null);
@@ -152,13 +142,12 @@ public class StationDal  extends SQLiteAssetHelper {
         trip.setToStation(cursor.getString(2));
 
         try {
-          SimpleDateFormat sdf = new SimpleDateFormat(dbTimeFormat);
           Calendar arrival = Calendar.getInstance();
-          arrival.setTime(sdf.parse(cursor.getString(4)));
+          arrival.setTime(dbTimeFormat.parse(cursor.getString(4)));
           trip.setArrival(arrival);
 
           Calendar departure = Calendar.getInstance();
-          departure.setTime(sdf.parse(cursor.getString(3)));
+          departure.setTime(dbTimeFormat.parse(cursor.getString(3)));
           trip.setDeparture(departure);
         } catch (ParseException e) {
 
@@ -181,10 +170,10 @@ public class StationDal  extends SQLiteAssetHelper {
     String selectQuery = "select b.stop_id, b.stop_name, b.stop_lat, b.stop_lon, b.zone_id " +
       "from stop_times a, stops b where a.stop_id = b.stop_id and a.trip_id='%s' and a.departure_time >= '%s' and a.arrival_time <= '%s'";
 
-
-    String arrivalTimeStr = getDBTimeString(trip.getArrival());
-    String departureTimeStr = getDBTimeString(trip.getDeparture());
-    String fulfilledSelectQuery = String.format(selectQuery, trip.getId(), departureTimeStr, arrivalTimeStr);
+    String fulfilledSelectQuery = String.format(selectQuery,
+      trip.getId(),
+      getDBTimeString(trip.getDeparture()),
+      getDBTimeString(trip.getArrival()));
 
     SQLiteDatabase db = getReadableDatabase();
     Cursor cursor = db.rawQuery(fulfilledSelectQuery, null);
@@ -205,9 +194,6 @@ public class StationDal  extends SQLiteAssetHelper {
       } while (cursor.moveToNext());
     }
 
-    /*
-    select * from stop_times where trip_id='6506115-CT-12OCT-Caltrain-Sunday-02' and stop_sequence < (select stop_sequence from stop_times where trip_id='6506115-CT-12OCT-Caltrain-Sunday-02' and stop_id=70232) and stop_sequence >= (select stop_sequence from stop_times where trip_id='6506115-CT-12OCT-Caltrain-Sunday-02' and stop_id=70142)
-     */
     db.close();
     return stations;
   }

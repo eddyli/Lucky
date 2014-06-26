@@ -125,7 +125,6 @@ public class MainActivity extends LocationFragmentActivity implements
 
       List<Trip> trips = mTripManager.getTrips(fromStation, selectedStation, Calendar.getInstance());
       if(trips != null && trips.size() > 0) {
-        //get stops for closest trip.
         List<Station> stops = mTripManager.getStops(trips.get(0));
 
         if(stops != null && stops.size() > 0) {
