@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.randalltower605.lucky.R;
 import com.randalltower605.lucky.manager.StationManager;
+import com.randalltower605.lucky.manager.TripManager;
 import com.randalltower605.lucky.model.Station;
 import com.randalltower605.lucky.model.Trip;
 
@@ -27,13 +28,15 @@ public class ScheduleFragment extends Fragment {
   private Button mToSelectButton;
   private Station mFromStation;
   private Station mToStation;
-  private StationManager stationManager;
+  private TripManager mTripManager;
+  private StationManager mStationManager;
   private TableLayout mScheduleTable;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    stationManager = StationManager.getInstance(getActivity());
+    mStationManager = StationManager.getInstance(getActivity());
+    mTripManager = TripManager.getInstance(getActivity());
   }
 
   @Override
@@ -53,7 +56,7 @@ public class ScheduleFragment extends Fragment {
           public void onStationSelectedDialog(Station station) {
 
           if(station != null) {
-            stationManager.pushRecentStation(station);
+            mStationManager.pushRecentStation(station);
           }
           mFromStation = station;
           if(mFromSelectButton != null) {
@@ -78,7 +81,7 @@ public class ScheduleFragment extends Fragment {
           public void onStationSelectedDialog(Station station) {
 
             if (station != null) {
-              stationManager.pushRecentStation(station);
+              mStationManager.pushRecentStation(station);
             }
             mToStation = station;
             if(mToSelectButton != null) {
@@ -102,7 +105,7 @@ public class ScheduleFragment extends Fragment {
 
   private void refreshSchedules() {
     if(mFromStation != null && mToStation != null) {
-      List<Trip> trips = stationManager.getTrips(mFromStation, mToStation, Calendar.getInstance());
+      List<Trip> trips = mTripManager.getTrips(mFromStation, mToStation, Calendar.getInstance());
       updateScheduleTable(trips);
     }
   }

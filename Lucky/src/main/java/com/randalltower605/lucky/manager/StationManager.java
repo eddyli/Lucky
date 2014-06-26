@@ -23,7 +23,6 @@ public class StationManager {
   private static List<Station> mStations;
   private static Queue<Station> mRecentStations;
   private static final int MAX_RECENT_STATIONS_SIZE = 2;
-  private static Context context;
   private static final String TAG = StationManager.class.getSimpleName();
 
 
@@ -38,8 +37,7 @@ public class StationManager {
     return m_instance;
   }
 
-  private StationManager(Context c) {
-    context = c;
+  private StationManager(Context context) {
     stationDal = new StationDal(context);
     mStations = stationDal.getAllParentStations();
   }
@@ -76,14 +74,7 @@ public class StationManager {
     return mStations;
   }
 
-  public List<Trip> getTrips(Station from, Station to, Calendar today) {
-    return stationDal.getTrips(from.getId(), to.getId(), today);
-  }
 
-  public List<Station> getTripStops(Station from, Station to, Calendar today) {
-    Trip trip = stationDal.getTrip(from.getId(), to.getId(), today);
-    return stationDal.getTripStops(trip.getId(), trip.getDeparture(), trip.getArrival());
-  }
 
   //get this save into file system too.
   public void pushRecentStation(Station station) {

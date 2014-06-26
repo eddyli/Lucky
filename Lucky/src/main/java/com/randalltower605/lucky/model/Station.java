@@ -8,6 +8,7 @@ import com.google.android.gms.location.Geofence;
  * Created by eli on 3/16/14.
  */
 public class Station {
+  public static final String LOCATION_PROVIDER = "self";
   private String mId;
   private String mName;
   private Location mLocation;

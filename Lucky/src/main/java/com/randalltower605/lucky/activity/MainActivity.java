@@ -14,6 +14,7 @@ import com.randalltower605.lucky.R;
 import com.randalltower605.lucky.fragment.ScheduleFragment;
 import com.randalltower605.lucky.fragment.SetAlarmFragment;
 import com.randalltower605.lucky.manager.StationManager;
+import com.randalltower605.lucky.manager.TripManager;
 import com.randalltower605.lucky.model.Station;
 import com.randalltower605.lucky.model.Trip;
 import com.randalltower605.lucky.util.DebugUtil;
@@ -27,6 +28,7 @@ public class MainActivity extends LocationFragmentActivity implements
   ViewPager mViewPager;
   Location mCurrentLocation;
   StationManager mStationManager;
+  TripManager mTripManager;
   private static final int GEOFENCE_RADIUS = 100;
   private static final long GEOFENCE_EXPIRY = 2 * 60 * 60 * 1000;
 
@@ -44,6 +46,7 @@ public class MainActivity extends LocationFragmentActivity implements
     mViewPager = (ViewPager)findViewById(R.id.mainViewPager);
     mViewPager.setAdapter(pagerAdapter);
     mStationManager = StationManager.getInstance(this);
+    mTripManager = TripManager.getInstance(this);
   }
 
   @Override
@@ -120,22 +123,30 @@ public class MainActivity extends LocationFragmentActivity implements
 
     if(selectedStation != null && fromStation != null) {
 
-      List<Trip> trips = mStationManager.getTrips(fromStation, selectedStation, Calendar.getInstance());
-      List<Station> tripStops = mStationManager.getTripStops(fromStation, selectedStation, Calendar.getInstance());
+      List<Trip> trips = mTripManager.getTrips(fromStation, selectedStation, Calendar.getInstance());
+      if(trips != null && trips.size() > 0) {
+        //get stops for closest trip.
+        List<Station> stops = mTripManager.getStops(trips.get(0));
 
-      //add geofences
-      List<Geofence> geofences = new ArrayList<Geofence>();
-      for(int i=0; i< tripStops.size(); i++) {
-        geofences.add(tripStops.get(i).toGeofence(Geofence.GEOFENCE_TRANSITION_ENTER, GEOFENCE_RADIUS, GEOFENCE_EXPIRY));
+        if(stops != null && stops.size() > 0) {
+          List<Geofence> geofences = new ArrayList<Geofence>();
+          for (int i = 0; i < stops.size(); i++) {
+            geofences.add(stops.get(i).toGeofence(Geofence.GEOFENCE_TRANSITION_ENTER, GEOFENCE_RADIUS, GEOFENCE_EXPIRY));
+          }
+          addGeoFences(geofences);
+
+          Intent intent = new Intent(this, DashboardActivity.class);
+          Bundle b = new Bundle();
+          b.putString(DashboardActivity.TO_STATION_ID, selectedStation.getId());
+          b.putString(DashboardActivity.FROM_STATION_ID, fromStation.getId());
+          intent.putExtras(b);
+          startActivity(intent);
+        } else {
+          //no stops available
+        }
+      } else {
+        //no trips available
       }
-      addGeoFences(geofences);
-
-      Intent intent = new Intent(this, DashboardActivity.class);
-      Bundle b = new Bundle();
-      b.putString(DashboardActivity.TO_STATION_ID, selectedStation.getId()); //Your id
-      b.putString(DashboardActivity.FROM_STATION_ID, fromStation.getId()); //Your id
-      intent.putExtras(b);
-      startActivity(intent);
     }
   }
 
