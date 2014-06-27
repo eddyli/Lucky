@@ -123,12 +123,11 @@ public class MainActivity extends LocationFragmentActivity implements
     }
 
     if(selectedStation != null && fromStation != null) {
+      Trip trip= mTripManager.guessTrip(fromStation, selectedStation, Calendar.getInstance());
+      if(trip != null) {
+        List<Stop> stops = mTripManager.getStops(trip);
 
-      List<Trip> trips = mTripManager.getTrips(fromStation, selectedStation, Calendar.getInstance());
-      if(trips != null && trips.size() > 0) {
-        List<Stop> stops = mTripManager.getStops(trips.get(0));
-
-        if(stops != null && stops.size() > 0) {
+        if (stops != null && stops.size() > 0) {
           List<Geofence> geofences = new ArrayList<Geofence>();
           for (int i = 0; i < stops.size(); i++) {
             geofences.add(stops.get(i).toGeofence(Geofence.GEOFENCE_TRANSITION_ENTER, GEOFENCE_RADIUS, GEOFENCE_EXPIRY));
@@ -145,7 +144,7 @@ public class MainActivity extends LocationFragmentActivity implements
           //no stops available
         }
       } else {
-        //no trips available
+        //no guess trip available
       }
     }
   }

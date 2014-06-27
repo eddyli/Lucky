@@ -8,16 +8,15 @@ import android.location.Location;
 import com.randalltower605.lucky.model.Stop;
 import com.randalltower605.lucky.model.Trip;
 import com.randalltower605.lucky.model.Station;
+import com.randalltower605.lucky.util.DalUtils;
+import com.randalltower605.lucky.util.StationUtils;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by eli on 4/16/14.
@@ -26,18 +25,7 @@ public class StationDal  extends SQLiteAssetHelper {
   private static final int DB_VERSION = 1;
   private static final String DB_NAME = "caltrain.sqlite";
 
-  private static final Map<Integer, String> dbDayString = new HashMap<Integer, String>();
-  static {
-    dbDayString.put(1, "sunday");
-    dbDayString.put(2, "monday");
-    dbDayString.put(3, "tuesday");
-    dbDayString.put(4, "wednesday");
-    dbDayString.put(5, "thursday");
-    dbDayString.put(6, "friday");
-    dbDayString.put(7, "saturday");
-  }
   //caltrain db day don't end at 00, overnight train hour could exceed 24. for example 1am = 25, etc.
-  private static final int dayEndsHour = 3;
   private static final SimpleDateFormat dbTimeFormat = new SimpleDateFormat("HH:mm:ss");
   private static final SimpleDateFormat dbDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -50,30 +38,6 @@ public class StationDal  extends SQLiteAssetHelper {
     super.onUpgrade(db, oldVersion, newVersion);
   }
 
-  private String getDBTimeString(Calendar calendar) {
-    String timeStr = dbTimeFormat.format(calendar.getTime());
-    int hour = calendar.get(Calendar.HOUR);
-    if(hour >= 0 && hour <= dayEndsHour) {
-        timeStr = Integer.toString(24 + hour) + timeStr.substring(2, timeStr.length());
-    }
-    return timeStr;
-  }
-
-  private String getDBDateString(Calendar calendar) {
-    int hour = calendar.get(Calendar.HOUR);
-    if(hour >= 0 && hour <= dayEndsHour) {
-      calendar.add(Calendar.DATE, -1);
-    }
-    return (dbDateFormat).format(calendar.getTime());
-  }
-
-  private String getDBWeekDayString(Calendar calendar) {
-    int hour = calendar.get(Calendar.HOUR);
-    if(hour >= 0 && hour <= dayEndsHour) {
-      calendar.add(Calendar.DATE, -1);
-    }
-    return dbDayString.get(calendar.get(Calendar.DAY_OF_WEEK));
-  }
 
   public List<Station> getAllParentStations() {
     List<Station> stations = new ArrayList<Station>();
@@ -104,11 +68,92 @@ public class StationDal  extends SQLiteAssetHelper {
     return stations;
   }
 
-  public List<Trip> getTrips(String fromId, String toId, Calendar calendar) {
+  public List<Trip> guessTrips(Station from, Station to, Calendar now, Calendar soon) {
+    List<Trip> trips = new ArrayList<Trip>();
+    String selectQuery = "select a1.trip_id, e1.parent_station, e.parent_station, a1.departure_time, a.arrival_time, e1.stop_lat, e1.stop_lon, e.stop_lat, e.stop_lon " +
+      "from stop_times a, stop_times a1, trips b, calendar d, stops e1, stops e " +
+      "where a.stop_id = e.stop_id and e.parent_station='%s' and a.arrival_time > '%s' " +
+      "and a1.departure_time > '%s' and a1.arrival_time < '%s' " +
+      "and a.trip_id = b.trip_id and a1.trip_id = a.trip_id and a1.stop_sequence < a.stop_sequence and b.direction_id=%s " +
+      "and d.%s = 1 and d.start_date <='%s' and d.end_date >='%s' and b.service_id = d.service_id " +
+      "and e1.stop_id = a1.stop_id";
+
+    String timeStr = DalUtils.getDBTimeString(now);
+    String dateStr = DalUtils.getDBDateString(now);
+    String weekdayFlag = DalUtils.getDBWeekDayString(now);
+    String toTimeStr = DalUtils.getDBTimeString(soon);
+    String direction = StationUtils.isSouthOf(from, to) ? "0" : "1";
+
+    String fulFilledSelectQuery = String.format(selectQuery,
+      to.getId(),
+      timeStr,
+      timeStr,
+      toTimeStr,
+      direction,
+      weekdayFlag,
+      dateStr,
+      dateStr);
+
+    SQLiteDatabase db = getReadableDatabase();
+    Cursor cursor = db.rawQuery(fulFilledSelectQuery, null);
+
+    try {
+      if (cursor.moveToFirst()) {
+        do {
+          Trip trip = new Trip();
+          trip.setId(cursor.getString(0));
+          trip.setFromStation(cursor.getString(1));
+          trip.setToStation(cursor.getString(2));
+
+          Calendar arrival = Calendar.getInstance();
+          arrival.setTime(dbTimeFormat.parse(cursor.getString(4)));
+          trip.setArrival(arrival);
+
+          Calendar departure = Calendar.getInstance();
+          departure.setTime(dbTimeFormat.parse(cursor.getString(3)));
+          trip.setDeparture(departure);
+
+          Location fromLocation = new Location(Station.LOCATION_PROVIDER);
+          fromLocation.setLatitude(Double.parseDouble(cursor.getString(5)));
+          fromLocation.setLongitude(Double.parseDouble(cursor.getString(6)));
+          trip.setFromLocation(fromLocation);
+
+          Location toLocation = new Location(Station.LOCATION_PROVIDER);
+          toLocation.setLatitude(Double.parseDouble(cursor.getString(7)));
+          toLocation.setLongitude(Double.parseDouble(cursor.getString(8)));
+          trip.setToLocation(toLocation);
+
+          trips.add(trip);
+        } while (cursor.moveToNext());
+      }
+    } catch (ParseException e) {
+      return new ArrayList<Trip>();
+    }
+
+    db.close();
+
+    /*
+    select a1.trip_id, e1.parent_station, e.parent_station, a1.departure_time, a.arrival_time from stop_times a, stop_times a1, trips b, calendar d, stops e1, stops e
+
+where a.stop_id = e.stop_id and e.parent_station='ctmv' and a.arrival_time > '08:30:00'
+
+and a1.departure_time > '08:30:00' and a1.arrival_time < '08:50:00'
+
+and a.trip_id = b.trip_id and a1.trip_id = a.trip_id and a1.stop_sequence < a.stop_sequence and b.direction_id=1
+
+and d.thursday = 1 and d.start_date <='2014-06-26' and d.end_date >='2014-06-26' and b.service_id = d.service_id
+
+and e1.stop_id = a1.stop_id
+
+     */
+    return trips;
+  }
+
+  public List<Trip> getTrips(String fromId, String toId, Calendar now) {
 
     List<Trip> trips = new ArrayList<Trip>();
 
-    String selectQuery = " SELECT c.trip_id, a.stop_name, a1.stop_name, b.departure_time, b1.arrival_time " +
+    String selectQuery = " SELECT c.trip_id, a.parent_station, a1.parent_station, b.departure_time, b1.arrival_time " +
       "FROM stops a, stop_times b, stops a1, stop_times b1, trips c, calendar d " +
       "where a.parent_station='%s' and a.stop_id = b.stop_id " +
       "and b.trip_id = b1.trip_id and a1.parent_station='%s' and a1.stop_id = b1.stop_id " +
@@ -117,13 +162,17 @@ public class StationDal  extends SQLiteAssetHelper {
       "and d.start_date <= '%s' and d.end_date >= '%s' and b.departure_time > '%s' " +
       "order by b.arrival_time";
 
+    String dateStr = DalUtils.getDBDateString(now);
+    String weekdayFlag = DalUtils.getDBWeekDayString(now);
+    String timeStr = DalUtils.getDBTimeString(now);
+
     String fulFilledSelectQuery = String.format(selectQuery,
       fromId,
       toId,
-      getDBWeekDayString(calendar),
-      getDBDateString(calendar),
-      getDBDateString(calendar),
-      getDBTimeString(calendar));
+      weekdayFlag,
+      dateStr,
+      dateStr,
+      timeStr);
 
     SQLiteDatabase db = getReadableDatabase();
     Cursor cursor = db.rawQuery(fulFilledSelectQuery, null);
@@ -164,10 +213,13 @@ public class StationDal  extends SQLiteAssetHelper {
     String selectQuery = "select b.stop_id, b.stop_name, b.stop_lat, b.stop_lon, b.zone_id, a.departure_time, a.arrival_time " +
       "from stop_times a, stops b where a.stop_id = b.stop_id and a.trip_id='%s' and a.departure_time >= '%s' and a.arrival_time <= '%s'";
 
+    String departureTimeStr = DalUtils.getDBTimeString(trip.getDeparture());
+    String arrivalTimeStr = DalUtils.getDBTimeString(trip.getArrival());
+
     String fulfilledSelectQuery = String.format(selectQuery,
       trip.getId(),
-      getDBTimeString(trip.getDeparture()),
-      getDBTimeString(trip.getArrival()));
+      departureTimeStr,
+      arrivalTimeStr);
 
     SQLiteDatabase db = getReadableDatabase();
     Cursor cursor = db.rawQuery(fulfilledSelectQuery, null);

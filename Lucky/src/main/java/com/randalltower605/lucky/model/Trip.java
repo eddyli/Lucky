@@ -1,5 +1,7 @@
 package com.randalltower605.lucky.model;
 
+import android.location.Location;
+
 import java.util.Calendar;
 
 /**
@@ -11,6 +13,8 @@ public class Trip {
   private Calendar mArrival;
   private String mFromStationId;
   private String mToStationId;
+  private Location mFromLocation;
+  private Location mToLocation;
   private float mFare;
 
   public String getId() {
@@ -51,5 +55,29 @@ public class Trip {
 
   public void setToStation(String toStationId) {
     this.mToStationId = toStationId;
+  }
+
+  public void setFromStationId(String fromStationId) {
+    mFromStationId = fromStationId;
+  }
+
+  public void setToStationId(String toStationId) {
+    mToStationId = toStationId;
+  }
+
+  public Location getFromLocation() {
+    return mFromLocation;
+  }
+
+  public void setFromLocation(Location fromLocation) {
+    mFromLocation = fromLocation;
+  }
+
+  public Location getToLocation() {
+    return mToLocation;
+  }
+
+  public void setToLocation(Location toLocation) {
+    mToLocation = toLocation;
   }
 }
