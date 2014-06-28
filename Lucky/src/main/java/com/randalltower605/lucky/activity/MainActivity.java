@@ -123,8 +123,10 @@ public class MainActivity extends LocationFragmentActivity implements
     }
 
     if(selectedStation != null && fromStation != null) {
-      Trip trip= mTripManager.guessTrip(fromStation, selectedStation, Calendar.getInstance());
+      Trip trip= mTripManager.guessTrip(mCurrentLocation, selectedStation, Calendar.getInstance());
       if(trip != null) {
+        Station guess = mStationManager.getStationById(trip.getFromStationId());
+        DebugUtil.showToast(this, "guessed from station is = " + guess.getName() + ", " + trip.getId(), true);
         List<Stop> stops = mTripManager.getStops(trip);
 
         if (stops != null && stops.size() > 0) {
@@ -146,6 +148,10 @@ public class MainActivity extends LocationFragmentActivity implements
       } else {
         //no guess trip available
       }
+
+      //two things to think about
+      //1. if not too far from the guess, can ignore north and south
+      //2. if too far from the guess prompt user if he wants to start alarm later.
     }
   }
 

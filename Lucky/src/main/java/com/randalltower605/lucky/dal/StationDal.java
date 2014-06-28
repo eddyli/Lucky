@@ -68,7 +68,7 @@ public class StationDal  extends SQLiteAssetHelper {
     return stations;
   }
 
-  public List<Trip> guessTrips(Station from, Station to, Calendar now, Calendar soon) {
+  public List<Trip> guessTrips(Station to, Calendar now, boolean goSouth, Calendar soon) {
     List<Trip> trips = new ArrayList<Trip>();
     String selectQuery = "select a1.trip_id, e1.parent_station, e.parent_station, a1.departure_time, a.arrival_time, e1.stop_lat, e1.stop_lon, e.stop_lat, e.stop_lon " +
       "from stop_times a, stop_times a1, trips b, calendar d, stops e1, stops e " +
@@ -82,7 +82,7 @@ public class StationDal  extends SQLiteAssetHelper {
     String dateStr = DalUtils.getDBDateString(now);
     String weekdayFlag = DalUtils.getDBWeekDayString(now);
     String toTimeStr = DalUtils.getDBTimeString(soon);
-    String direction = StationUtils.isSouthOf(from, to) ? "0" : "1";
+    String direction = goSouth ? "1" : "0";
 
     String fulFilledSelectQuery = String.format(selectQuery,
       to.getId(),

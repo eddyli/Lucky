@@ -22,6 +22,9 @@ public class TripManager {
   private static StationDal stationDal;
   private static TripManager m_instance;
 
+  private static final int DISTANCE_CLOSE_ENOUGH = 500;
+  private static final int DISTANCE_TOO_FAR = 4000;
+
   private int nextStationInterval = 20;
 
   public static TripManager getInstance(Context context) {
@@ -35,47 +38,53 @@ public class TripManager {
     stationDal = new StationDal(context);
   }
 
-  public Trip guessTrip(Station from, Station to, Calendar now) {
+  private boolean isOnTheWay(boolean goSouth, Location l1, Location l2) {
+    if((goSouth && (l1.getLatitude() >= l2.getLatitude())) ||
+      (!goSouth && (l1.getLatitude() <= l2.getLatitude()))) {
+      Log.d(TAG, "on the way");
+      return true;
+    }
+    return false;
+  }
+  private boolean isCloseEnough(Location l1, Location l2) {
+    float dist = l1.distanceTo(l2);
+    if(dist <= DISTANCE_CLOSE_ENOUGH) {
+      Log.d(TAG, "close enough");
+      return true;
+    }
+    return false;
+  }
+
+  private boolean isTooFar(Location l1, Location l2) {
+    float dist = l1.distanceTo(l2);
+    if(dist >= DISTANCE_TOO_FAR) {
+      Log.d(TAG, "too far");
+      return true;
+    }
+    return false;
+  }
+
+  public Trip guessTrip(Location at, Station to, Calendar now) {
+    // get list of trip candidates
+    boolean goSouth = at.getLatitude() > to.getLatitude();
     Calendar soon = (Calendar)now.clone();
     soon.add(Calendar.MINUTE, nextStationInterval);
-    List<Trip> trips = stationDal.guessTrips(from, to, now, soon);
+    List<Trip> trips = stationDal.guessTrips(to, now, goSouth, soon);
 
     Trip trip = null;
-    Location center = from.getLocation();
-
-    boolean headSouth = StationUtils.isSouthOf(to, from);
     float minDistance = Float.MAX_VALUE;
 
     for(int i=0; i< trips.size(); i++) {
       Trip thisTrip = trips.get(i);
+
+      Log.d(TAG, "Evaluating " + thisTrip.getFromStationId() + " to " + thisTrip.getToStationId()+ " for location(" + at.getLatitude() + "," + at.getLongitude() + ")");
       Location fromLocation = thisTrip.getFromLocation();
 
-      if(headSouth) {
-        Log.d(TAG, "headSouth");
-      }
+      if(!isTooFar(at, fromLocation) &&
+        (isCloseEnough(at, fromLocation) || isOnTheWay(goSouth, at, fromLocation))) {
 
-      if(center.getLatitude() >= fromLocation.getLatitude()) {
-        Log.d(TAG, thisTrip.getFromStationId() + "center latitude greater" + center.getLatitude() + "," + fromLocation.getLatitude());
-      }
-
-      if(center.getLatitude() <= fromLocation.getLatitude()) {
-        Log.d(TAG, thisTrip.getFromStationId() + "from Latitude greater" + center.getLatitude() + "," + fromLocation.getLatitude());
-      }
-
-
-      if((headSouth && (center.getLatitude() >= fromLocation.getLatitude())) ||
-        (!headSouth && (center.getLatitude() <= fromLocation.getLatitude()))) {
-        float distance = center.distanceTo(fromLocation);
-        Log.d(TAG, "station " + thisTrip.getFromStationId() + " is " + distance);
-
-        /*
-        if (center.getLatitude() > fromLocation.getLatitude()) {
-          Log.d(TAG, "what the hell");
-          if (center.getLatitude() == fromLocation.getLatitude()) {
-            Log.d(TAG, "what the hell 2");
-          }
-        }*/
-
+        float distance = at.distanceTo(fromLocation);
+        Log.d(TAG, " distance is " + distance);
         if (distance < minDistance) {
           minDistance = distance;
           trip = thisTrip;
@@ -83,14 +92,12 @@ public class TripManager {
       }
     }
 
+    if(trip != null)
+    {    Log.d(TAG, "trip wins : " + trip.getFromStationId() + " to " + trip.getToStationId());
+    } else {
+      Log.d(TAG, "NO ONE WINS");
+    }
     return trip;
-  }
-
-  public List<Trip> guessTrips(Station from, Station to, Calendar now) {
-    Calendar soon = (Calendar)now.clone();
-    soon.add(Calendar.MINUTE, nextStationInterval);
-
-    return stationDal.guessTrips(from, to, now, soon);
   }
 
   public List<Trip> getTrips(Station from, Station to, Calendar date) {
