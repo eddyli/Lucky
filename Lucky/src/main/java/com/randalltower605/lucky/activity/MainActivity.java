@@ -1,11 +1,16 @@
 package com.randalltower605.lucky.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 
@@ -18,7 +23,10 @@ import com.randalltower605.lucky.manager.TripManager;
 import com.randalltower605.lucky.model.Station;
 import com.randalltower605.lucky.model.Stop;
 import com.randalltower605.lucky.model.Trip;
+import com.randalltower605.lucky.service.StationArrivalService;
+import com.randalltower605.lucky.util.AppConstants;
 import com.randalltower605.lucky.util.DebugUtil;
+import com.randalltower605.lucky.util.LocationTestUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,7 +38,7 @@ public class MainActivity extends LocationFragmentActivity implements
   Location mCurrentLocation;
   StationManager mStationManager;
   TripManager mTripManager;
-  private static final int GEOFENCE_RADIUS = 100;
+  private static final int GEOFENCE_RADIUS = 1000;
   private static final long GEOFENCE_EXPIRY = 2 * 60 * 60 * 1000;
 
   private static final String TAG = MainActivity.class.getSimpleName();
@@ -114,10 +122,28 @@ public class MainActivity extends LocationFragmentActivity implements
   }
 
   public void onStartAlarmClick(Station selectedStation) {
+    /*
+    List<Geofence> geofences = new ArrayList<Geofence>();
+    for (int i = 0; i < LocationTestUtil.WAYPOINTS_LAT.length; i++) {
+      Geofence geofence = new Geofence.Builder()
+        .setRequestId(Integer.toString(i))
+        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+        .setCircularRegion(
+          LocationTestUtil.WAYPOINTS_LAT[i], LocationTestUtil.WAYPOINTS_LNG[i], GEOFENCE_RADIUS)
+        .setExpirationDuration(GEOFENCE_EXPIRY)
+        .build();
+      geofences.add(geofence);
+    }
+
+    addGeoFences(geofences);*/
+
+
     Station fromStation = null;
     mCurrentLocation = getCurrentLocation();
+
+
     if(mCurrentLocation != null) {
-      DebugUtil.showToast(this, "current location = " + mCurrentLocation.toString());
+      //DebugUtil.showToast(this, "current location = " + mCurrentLocation.toString());
       fromStation = mStationManager.getNearestStation(mCurrentLocation);
       DebugUtil.showToast(this, "nearest station = " + fromStation.getName());
     }
@@ -131,9 +157,12 @@ public class MainActivity extends LocationFragmentActivity implements
 
         if (stops != null && stops.size() > 0) {
           List<Geofence> geofences = new ArrayList<Geofence>();
+
           for (int i = 0; i < stops.size(); i++) {
             geofences.add(stops.get(i).toGeofence(Geofence.GEOFENCE_TRANSITION_ENTER, GEOFENCE_RADIUS, GEOFENCE_EXPIRY));
           }
+
+          //geofences.add(fromStation.toGeofence(Geofence.GEOFENCE_TRANSITION_ENTER, GEOFENCE_RADIUS, GEOFENCE_EXPIRY));
           addGeoFences(geofences);
 
           Intent intent = new Intent(this, DashboardActivity.class);
@@ -154,5 +183,4 @@ public class MainActivity extends LocationFragmentActivity implements
       //2. if too far from the guess prompt user if he wants to start alarm later.
     }
   }
-
 }

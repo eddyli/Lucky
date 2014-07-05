@@ -10,9 +10,14 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.randalltower605.lucky.R;
+import com.randalltower605.lucky.manager.StationManager;
+import com.randalltower605.lucky.model.Station;
 import com.randalltower605.lucky.service.StationArrivalService;
 import com.randalltower605.lucky.util.AppConstants;
 import com.randalltower605.lucky.util.DebugUtil;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by eli on 4/23/14.
@@ -23,11 +28,14 @@ public class DashboardActivity extends LocationFragmentActivity{
   public final static String TAG = DashboardActivity.class.getSimpleName();
   StationArrivalResponseReceiver mStationArrivalResponseReceiver;
 
+  private StationManager mStationManager;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Log.d(TAG, "onCreate: BEB");
     setContentView(R.layout.activity_dashboard);
+    mStationManager = StationManager.getInstance(this);
 
     mStationArrivalResponseReceiver = new StationArrivalResponseReceiver(new Handler());
     LocalBroadcastManager.getInstance(this).registerReceiver(mStationArrivalResponseReceiver,
@@ -78,15 +86,28 @@ public class DashboardActivity extends LocationFragmentActivity{
     }
     public void onReceive(Context context, Intent intent) {
       DebugUtil.showToast(context, "Dashboard receive response");
-      String[] triggerIds = intent.getStringArrayExtra(StationArrivalService.EVENT_GEO_FENCE_ENTER);
+      final String[] triggerIds = intent.getStringArrayExtra(StationArrivalService.EVENT_GEO_FENCE_ENTER);
 
       handler.post(new Runnable() {
         @Override
         public void run() {
-          DebugUtil.showToast(getApplicationContext(), "onReceive: enter geofence");
+          if(triggerIds != null) {
+            Station triggeredStation = mStationManager.getStationById(triggerIds[0]);
+            if(triggeredStation != null) {
+              DebugUtil.showToast(getApplicationContext(), "onReceive: enter geofence" + triggeredStation.getName());
+            } else {
+              DebugUtil.showToast(getApplicationContext(), "onReceive: enter geofence" + triggerIds[0]);
+            }
+
+            //how to remove geofence when locationclient is not connected (aka activity not active?)
+            removeGeoFence(Arrays.asList(triggerIds));
+          }
+          else {
+            DebugUtil.showToast(getApplicationContext(), "onReceive: triggerids is null");
+          }
         }
       });
-      Log.d(TAG, "onReceive: triggerIds = ");
+      Log.d(TAG, "onReceive: triggerIds = " + triggerIds[0]);
     }
   }
 }

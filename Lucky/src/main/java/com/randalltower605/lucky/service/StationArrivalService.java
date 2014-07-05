@@ -6,6 +6,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationClient;
+import com.randalltower605.lucky.util.AppConstants;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class StationArrivalService extends IntentService {
         }
 
         //send local broadcast
-        Intent broadcastIntent = new Intent();
+        Intent broadcastIntent = new Intent(AppConstants.BROADCAST_ACTION);
         broadcastIntent.putExtra(EVENT_GEO_FENCE_ENTER, triggerIds);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
 

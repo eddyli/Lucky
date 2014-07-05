@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:appcompat-v7:19.0.0'
     compile files('lib/sqliteassethelper-2.0.1.jar')
     compile 'com.google.android.gms:play-services:4.2.42'
 }

@@ -24,8 +24,7 @@ public class TripManager {
 
   private static final int DISTANCE_CLOSE_ENOUGH = 500;
   private static final int DISTANCE_TOO_FAR = 4000;
-
-  private int nextStationInterval = 20;
+  private static final int nextStationInterval = 20;
 
   public static TripManager getInstance(Context context) {
     if(m_instance == null) {

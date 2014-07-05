@@ -126,10 +126,10 @@ public class LocationFragmentActivity extends FragmentActivity implements
     }
   }
 
-  protected void removeGeoFence() {
+  protected void removeGeoFence(List<String> geofenceRequestIds) {
     //queue?
-    if(mLocationClient.isConnected()) {
-
+    if(geofenceRequestIds != null && mLocationClient.isConnected()) {
+      mLocationClient.removeGeofences(geofenceRequestIds, this);
     }
   }
 
@@ -186,13 +186,21 @@ public class LocationFragmentActivity extends FragmentActivity implements
   }
 
   @Override
-  public void onRemoveGeofencesByRequestIdsResult(int i, String[] strings) {
-
+  public void onRemoveGeofencesByRequestIdsResult(int statusCode, String[] strings) {
+    if (LocationStatusCodes.SUCCESS == statusCode) {
+      DebugUtil.showToast(this, "remove geo fences result = success");
+    } else {
+      DebugUtil.showToast(this, "remove geo fences result = failed");
+    }
   }
 
   @Override
-  public void onRemoveGeofencesByPendingIntentResult(int i, PendingIntent pendingIntent) {
-
+  public void onRemoveGeofencesByPendingIntentResult(int statusCode, PendingIntent pendingIntent) {
+    if (LocationStatusCodes.SUCCESS == statusCode) {
+      DebugUtil.showToast(this, "remove geo fences result = success");
+    } else {
+      DebugUtil.showToast(this, "remove geo fences result = failed");
+    }
   }
 
 

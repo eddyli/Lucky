@@ -210,7 +210,7 @@ and e1.stop_id = a1.stop_id
       return stops;
     }
 
-    String selectQuery = "select b.stop_id, b.stop_name, b.stop_lat, b.stop_lon, b.zone_id, a.departure_time, a.arrival_time " +
+    String selectQuery = "select b.parent_station, b.stop_name, b.stop_lat, b.stop_lon, b.zone_id, a.departure_time, a.arrival_time " +
       "from stop_times a, stops b where a.stop_id = b.stop_id and a.trip_id='%s' and a.departure_time >= '%s' and a.arrival_time <= '%s'";
 
     String departureTimeStr = DalUtils.getDBTimeString(trip.getDeparture());
