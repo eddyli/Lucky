@@ -166,10 +166,8 @@ public class MainActivity extends LocationFragmentActivity implements
           addGeoFences(geofences);
 
           Intent intent = new Intent(this, DashboardActivity.class);
-          Bundle b = new Bundle();
-          b.putString(DashboardActivity.TO_STATION_ID, selectedStation.getId());
-          b.putString(DashboardActivity.FROM_STATION_ID, fromStation.getId());
-          intent.putExtras(b);
+          intent.putExtra(DashboardActivity.TRIP, trip);
+          //intent.putExtra(DashboardActivity.STOPS, stops);
           startActivity(intent);
         } else {
           //no stops available

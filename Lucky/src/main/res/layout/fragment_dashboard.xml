@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              style="Dashboard">
+
+    <TextView
+        android:id="@+id/currentStation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Station"></TextView>
+    <TextView
+        android:id="@+id/destinationStation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Destination"></TextView>
+    <TextView
+        android:id="@+id/estimatedArrivalTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2:35pm"></TextView>
+</LinearLayout>

@@ -1,13 +1,15 @@
 package com.randalltower605.lucky.model;
 
 import android.location.Location;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.Calendar;
 
 /**
  * Created by eli on 4/18/14.
  */
-public class Trip {
+public class Trip implements Parcelable{
   private String mId;
   private Calendar mDeparture;
   private Calendar mArrival;
@@ -80,4 +82,52 @@ public class Trip {
   public void setToLocation(Location toLocation) {
     mToLocation = toLocation;
   }
+
+  public Trip() {
+
+  }
+
+  public Trip(Parcel in){
+    setId(in.readString());
+    setFromStationId(in.readString());
+    setToStationId(in.readString());
+
+    setDeparture((Calendar)in.readSerializable());
+    setArrival((Calendar)in.readSerializable());
+
+    Location from = new Location(Station.LOCATION_PROVIDER);
+    from.setLatitude(in.readDouble());
+    from.setLongitude(in.readDouble());
+    Location to = new Location(Station.LOCATION_PROVIDER);
+    to.setLatitude(in.readDouble());
+    to.setLongitude(in.readDouble());
+    setFromLocation(from);
+    setToLocation(to);
+  }
+  public void writeToParcel(Parcel p, int i) {
+    p.writeString(mId);
+    p.writeString(mFromStationId);
+    p.writeString(mToStationId);
+    p.writeSerializable(mDeparture);
+    p.writeSerializable(mArrival);
+    p.writeDouble(mFromLocation.getLatitude());
+    p.writeDouble(mFromLocation.getLongitude());
+    p.writeDouble(mToLocation.getLatitude());
+    p.writeDouble(mToLocation.getLongitude());
+  }
+
+  public int describeContents() {
+    return 0;
+  }
+
+  public static final Parcelable.Creator<Trip> CREATOR
+    = new Parcelable.Creator<Trip>() {
+    public Trip createFromParcel(Parcel in) {
+      return new Trip(in);
+    }
+
+    public Trip[] newArray(int size) {
+      return new Trip[size];
+    }
+  };
 }

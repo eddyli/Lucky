@@ -10,22 +10,23 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.randalltower605.lucky.R;
+import com.randalltower605.lucky.fragment.DashboardFragment;
 import com.randalltower605.lucky.manager.StationManager;
 import com.randalltower605.lucky.model.Station;
 import com.randalltower605.lucky.service.StationArrivalService;
 import com.randalltower605.lucky.util.AppConstants;
 import com.randalltower605.lucky.util.DebugUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
  * Created by eli on 4/23/14.
  */
 public class DashboardActivity extends LocationFragmentActivity{
-  public final static String FROM_STATION_ID = "fromStationId";
-  public final static String TO_STATION_ID = "toStationId";
+  public final static String TRIP = "trip";
+  public final static String STOPS = "stops";
   public final static String TAG = DashboardActivity.class.getSimpleName();
+  public DashboardFragment mDashboardFragment;
   StationArrivalResponseReceiver mStationArrivalResponseReceiver;
 
   private StationManager mStationManager;
@@ -36,6 +37,13 @@ public class DashboardActivity extends LocationFragmentActivity{
     Log.d(TAG, "onCreate: BEB");
     setContentView(R.layout.activity_dashboard);
     mStationManager = StationManager.getInstance(this);
+
+    if (savedInstanceState == null) {
+      mDashboardFragment = new DashboardFragment();
+      getSupportFragmentManager().beginTransaction()
+        .add(R.id.container, mDashboardFragment)
+        .commit();
+    }
 
     mStationArrivalResponseReceiver = new StationArrivalResponseReceiver(new Handler());
     LocalBroadcastManager.getInstance(this).registerReceiver(mStationArrivalResponseReceiver,
@@ -79,35 +87,37 @@ public class DashboardActivity extends LocationFragmentActivity{
     stopService(mServiceIntent);
   }
 
+  private void updateUI(Station station) {
+    DebugUtil.showToast(getApplicationContext(), "onReceive: enter " + station.getName());
+    mDashboardFragment.updateCurrentStation(station);
+  }
+
   private class StationArrivalResponseReceiver extends BroadcastReceiver {
     private Handler handler;
     private StationArrivalResponseReceiver(Handler handler) {
       this.handler = handler;
     }
     public void onReceive(Context context, Intent intent) {
-      DebugUtil.showToast(context, "Dashboard receive response");
       final String[] triggerIds = intent.getStringArrayExtra(StationArrivalService.EVENT_GEO_FENCE_ENTER);
 
       handler.post(new Runnable() {
         @Override
         public void run() {
-          if(triggerIds != null) {
+          if (triggerIds != null) {
             Station triggeredStation = mStationManager.getStationById(triggerIds[0]);
-            if(triggeredStation != null) {
-              DebugUtil.showToast(getApplicationContext(), "onReceive: enter geofence" + triggeredStation.getName());
+            if (triggeredStation != null) {
+              updateUI(triggeredStation);
             } else {
-              DebugUtil.showToast(getApplicationContext(), "onReceive: enter geofence" + triggerIds[0]);
+              DebugUtil.showToast(getApplicationContext(), "onReceive: enter " + triggerIds[0]);
             }
 
             //how to remove geofence when locationclient is not connected (aka activity not active?)
             removeGeoFence(Arrays.asList(triggerIds));
-          }
-          else {
+          } else {
             DebugUtil.showToast(getApplicationContext(), "onReceive: triggerids is null");
           }
         }
       });
-      Log.d(TAG, "onReceive: triggerIds = " + triggerIds[0]);
     }
   }
 }
